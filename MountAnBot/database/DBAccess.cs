@@ -59,7 +59,22 @@ namespace MountAnBot.database
             }
         }
 
-        public IEnumerable<Termin> getAllTermine()
+        public List<Termin> getAllZukTermine()
+        {
+            List<Termin> termine = new List<Termin>();
+            string sqlString = "SELECT * FROM termin WHERE vondatum > current_date;";
+            NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
+            NpgsqlDataReader dr = command.ExecuteReader();
+            while (dr.Read())
+            {
+                Termin termin = new Termin("" + dr[0], DateTime.Parse("" + dr[1]), DateTime.Parse("" + dr[2]));
+                termine.Add(termin);
+            }
+            dr.Close();
+            return termine;
+        }
+
+        public List<Termin> getAllTermine()
         {
             List<Termin> termine = new List<Termin>();
             string sqlString = "SELECT * FROM termin;";
@@ -72,6 +87,45 @@ namespace MountAnBot.database
             }
             dr.Close();
             return termine;
+        }
+
+        public List<Termin> getNextTermine()
+        {
+            List<Termin> termine = new List<Termin>();
+            string sqlString = "SELECT * FROM termin WHERE vondatum = (SELECT MIN(vondatum) FROM termin WHERE vondatum > current_date)";
+            NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
+            NpgsqlDataReader dr = command.ExecuteReader();
+            while (dr.Read())
+            {
+                Termin termin = new Termin("" + dr[0], DateTime.Parse("" + dr[1]), DateTime.Parse("" + dr[2]));
+                termine.Add(termin);
+            }
+            dr.Close();
+            return termine;
+        }
+
+        public bool removeTermin(Termin termin)
+        {
+            string sqlString = "DELETE FROM termin WHERE bezeichnung = '" + termin.Bezeichnung + "' AND vondatum = '" + termin.Vondate + "' AND bisdatum = '" + termin.Bisdate + "';";
+            NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
+            int rows = command.ExecuteNonQuery();
+            if(rows == 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool addTermin(Termin termin)
+        {
+            string sqlString = "INSERT INTO termin(bezeichnung, vondatum, bisdatum) VALUES ('" + termin.Bezeichnung + "','" + termin.Vondate + "','" + termin.Bisdate + "';";
+            NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
+            int rows = command.ExecuteNonQuery();
+            if(rows == 0)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
