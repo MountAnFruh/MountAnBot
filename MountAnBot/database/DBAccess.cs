@@ -62,7 +62,7 @@ namespace MountAnBot.database
         public List<Termin> getAllZukTermine()
         {
             List<Termin> termine = new List<Termin>();
-            string sqlString = "SELECT * FROM termin WHERE vondatum > current_date;";
+            string sqlString = "SELECT * FROM termin WHERE vondatum > current_date ORDER BY vondatum;";
             NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
             NpgsqlDataReader dr = command.ExecuteReader();
             while (dr.Read())
@@ -77,7 +77,7 @@ namespace MountAnBot.database
         public List<Termin> getAllTermine()
         {
             List<Termin> termine = new List<Termin>();
-            string sqlString = "SELECT * FROM termin;";
+            string sqlString = "SELECT * FROM termin ORDER BY vondatum;";
             NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
             NpgsqlDataReader dr = command.ExecuteReader();
             while (dr.Read())
@@ -92,7 +92,7 @@ namespace MountAnBot.database
         public List<Termin> getNextTermine()
         {
             List<Termin> termine = new List<Termin>();
-            string sqlString = "SELECT * FROM termin WHERE vondatum = (SELECT MIN(vondatum) FROM termin WHERE vondatum > current_date)";
+            string sqlString = "SELECT * FROM termin WHERE vondatum = (SELECT MIN(vondatum) FROM termin WHERE vondatum > current_date) ORDER BY vondatum";
             NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
             NpgsqlDataReader dr = command.ExecuteReader();
             while (dr.Read())
@@ -118,14 +118,24 @@ namespace MountAnBot.database
 
         public bool addTermin(Termin termin)
         {
-            string sqlString = "INSERT INTO termin(bezeichnung, vondatum, bisdatum) VALUES ('" + termin.Bezeichnung + "','" + termin.Vondate + "','" + termin.Bisdate + "';";
-            NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
-            int rows = command.ExecuteNonQuery();
-            if(rows == 0)
+            try
             {
-                return false;
+                string sqlString = "INSERT INTO termin(bezeichnung, vondatum, bisdatum) VALUES ('" + termin.Bezeichnung + "','" + termin.Vondate + "','" + termin.Bisdate + "');";
+                NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
+                command.ExecuteNonQuery();
+                return true;
             }
-            return true;
+            catch(NpgsqlException ex)
+            {
+                if(ex.ErrorCode == -2147467259)
+                {
+                    return false;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
         }
     }
 }

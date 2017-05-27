@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using MountAnBot.beans;
+using MountAnBot.core;
 using MountAnBot.database;
 using System;
 using System.Collections.Generic;
@@ -24,97 +25,64 @@ namespace MountAnBot.modules
         [Summary("Damit bekommst du deine Hilfe die du brauchst")]
         public async Task TerminHelp()
         {
-            EmbedBuilder embedbuilder = new EmbedBuilder();
-            embedbuilder.Color = new Color(255, 255, 0);
-            embedbuilder.Title = "Alle Termin-Commands:";
-            embedbuilder.Author = new EmbedAuthorBuilder()
-            {
-                Name = Context.User.Username
-            };
-
             string message = "";
             foreach (CommandInfo info in service.Commands)
             {
                 if(info.Name.StartsWith("termin"))
                 {
-                    message += "\n" + info.Name + " -> " + info.Summary;
+                    message += "\n**" + info.Name + "** -> " + info.Summary;
                 }
             }
-            embedbuilder.Description = message;
-            await ReplyAsync("", false, embedbuilder);
+            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "Alle Termin-Commands:", message));
         }
 
         [Command("termin list")]
         [Summary("Zeigt alle zukünftigen Termine an")]
         public async Task TerminList()
         {
-            EmbedBuilder embedbuilder = new EmbedBuilder();
-            embedbuilder.Color = new Color(255, 255, 0);
-            embedbuilder.Title = "Terminliste:";
-            embedbuilder.Author = new EmbedAuthorBuilder()
-            {
-                Name = Context.User.Username
-            };
-
             string message = "";
             foreach (Termin termin in dba.getAllZukTermine())
             {
-                message += "\n" + termin.ToString();
+                message += "\n+ " + termin.ToString();
             }
-            embedbuilder.Description = message;
-            await ReplyAsync("", false, embedbuilder);
+            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255,255,0),Context.User,"Terminliste:",message));
         }
 
         [Command("termin next")]
         [Summary("Zeigt den nächsten Termin an")]
         public async Task TerminNext()
         {
-            EmbedBuilder embedbuilder = new EmbedBuilder();
-            embedbuilder.Color = new Color(255, 255, 0);
-            embedbuilder.Author = new EmbedAuthorBuilder()
-            {
-                Name = Context.User.Username
-            };
-
             string message = "";
             List<Termin> termine = dba.getNextTermine();
-            embedbuilder.Title = termine.Count > 1 ? "Nächste Termine:" : "Nächster Termin:";
+            string title = termine.Count > 1 ? "Nächste Termine:" : "Nächster Termin:";
 
             foreach (Termin termin in termine)
             {
-                message += "\n" + termin.ToString();
+                message += "\n-> " + termin.ToString();
             }
-
-            embedbuilder.Description = message;
-            await ReplyAsync("", false, embedbuilder);
+            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255,255,0),Context.User,title,message));
         }
 
         [Command("termin list all")]
         [Summary("Zeigt alle Termine an")]
         public async Task TerminListAll()
         {
-            EmbedBuilder embedbuilder = new EmbedBuilder();
-            embedbuilder.Color = new Color(255, 255, 0);
-            embedbuilder.Title = "Terminliste:";
-            embedbuilder.Author = new EmbedAuthorBuilder()
-            {
-                Name = Context.User.Username
-            };
-
             string message = "";
             foreach (Termin termin in dba.getAllTermine())
             {
-                message += "\n" + termin.ToString();
+                message += "\n+ " + termin.ToString();
             }
-            embedbuilder.Description = message;
-            await ReplyAsync("", false, embedbuilder);
+            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255,255,0),Context.User,"Terminliste:",message));
         }
 
         [Command("termin remove")]
         [Summary("Entfernt einen Termin")]
         public async Task TerminRemove(params string[] input)
         {
-            if(input.Length >= 2 && input.Length <= 3)
+            Color color = new Color(255, 255, 0);
+            string message = "ERROR";
+
+            if (input.Length >= 2 && input.Length <= 3)
             {
                 Termin termin;
                 if(input.Length == 2)
@@ -128,48 +96,65 @@ namespace MountAnBot.modules
                 bool success = dba.removeTermin(termin);
                 if(success)
                 {
-                    await ReplyAsync("Termin wurde erfolgreich entfernt!");
+                    message = "Termin wurde erfolgreich entfernt!";
                 }
                 else
                 {
-                    await ReplyAsync("Es gibt keinen Termin mit diesen Daten!");
+                    color = new Color(255, 0, 0);
+                    message = "Es gibt keinen Termin mit diesen Daten!";
                 }
             }
             else
             {
-                await ReplyAsync("=> !termin remove [Bezeichnung] [Startdatum] {Enddatum}");
+                color = new Color(0, 255, 0);
+                message = "=> !termin remove [Bezeichnung] [Startdatum] {Enddatum}";
             }
+            await ReplyAsync("",false,MountEmbedBuilder.create(color,Context.User,"",message));
         }
 
         [Command("termin add")]
         [Summary("Fügt einen neuen Termin hinzu")]
         public async Task TerminAdd(params string[] input)
         {
-            if(input.Length >= 2 && input.Length <= 3)
+            Color color = new Color(255, 255, 0);
+            string message = "ERROR";
+
+            try
             {
-                Termin termin;
-                if (input.Length == 2)
+                if (input.Length >= 2 && input.Length <= 3)
                 {
-                    termin = new Termin(input[0], DateTime.Parse(input[1]));
+                    Termin termin;
+                    if (input.Length == 2)
+                    {
+                        termin = new Termin(input[0], DateTime.Parse(input[1]));
+                    }
+                    else
+                    {
+                        termin = new Termin(input[0], DateTime.Parse(input[1]), DateTime.Parse(input[2]));
+                    }
+                    bool success = dba.addTermin(termin);
+                    if (success)
+                    {
+                        message = "Termin wurde erfolgreich hinzugefügt!";
+                    }
+                    else
+                    {
+                        color = new Color(255, 0, 0);
+                        message = "Es existiert schon ein Termin mit diesen Daten!";
+                    }
                 }
                 else
                 {
-                    termin = new Termin(input[0], DateTime.Parse(input[1]), DateTime.Parse(input[2]));
-                }
-                bool success = dba.addTermin(termin);
-                if (success)
-                {
-                    await ReplyAsync("Termin wurde erfolgreich hinzugefügt!");
-                }
-                else
-                {
-                    await ReplyAsync("Es existiert schon ein Termin mit diesen Daten!");
+                    color = new Color(0, 255, 0);
+                    message = "=> !termin add [Bezeichnung] [Startdatum] {Enddatum}";
                 }
             }
-            else
+            catch (FormatException)
             {
-                await ReplyAsync("=> !termin add [Bezeichnung] [Startdatum] {Enddatum}");
+                color = new Color(255, 0, 0);
+                message = "**FORMATEXCEPTION:** Das Format des Datums ist falsch!";
             }
+            await ReplyAsync("", false, MountEmbedBuilder.create(color, Context.User, "", message));
         }
     }
 }

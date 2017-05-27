@@ -6,9 +6,9 @@ namespace MountAnBot.beans
 {
     public class Termin
     {
-        public string Bezeichnung { get; }
-        public string Vondate { get; }
-        public string Bisdate { get; }
+        public string Bezeichnung { get { return bezeichnung; } }
+        public DateTime Vondate { get { return vondate; } }
+        public DateTime Bisdate { get { return bisdate; } }
 
         private string bezeichnung;
         private DateTime vondate;
@@ -35,7 +35,7 @@ namespace MountAnBot.beans
             {
                 bisdateStr = " - " + bisdate.Day + "." + bisdate.Month + "." + bisdate.Year;
             }
-            return vondate.Day + "." + vondate.Month + "." + vondate.Year + bisdateStr + ": " + bezeichnung;
+            return "__**" + vondate.Day + "." + vondate.Month + "." + vondate.Year + bisdateStr + "**__: " + bezeichnung;
         }
 
         public int CompareTo(Termin ter)
