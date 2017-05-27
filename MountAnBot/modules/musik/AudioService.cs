@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MountAnBot.modules.musik
@@ -16,8 +17,11 @@ namespace MountAnBot.modules.musik
         public string Musicdirectory { get { return musicdirectory; } }
         public string Ffmpegsource { get { return ffmpegsource; } }
 
+        private CancellationTokenSource cancel = new CancellationTokenSource();
         private IAudioClient client;
         private DBAccess dba = DBAccess.getInstance();
+        private Stream output;
+        private Process process;
 
         private string musicdirectory, ffmpegsource;
 
@@ -65,11 +69,30 @@ namespace MountAnBot.modules.musik
             if (client != null)
             {
                 Console.WriteLine($"Starting playback of {path}");
-                Stream output = CreateStream(path).StandardOutput.BaseStream;
+                process = CreateStream(path);
+                output = process.StandardOutput.BaseStream;
                 AudioOutStream stream = client.CreatePCMStream(AudioApplication.Music, 1920);
-                await output.CopyToAsync(stream);
-                await stream.FlushAsync().ConfigureAwait(false);
+                try
+                {
+                    await output.CopyToAsync(stream, 81920, cancel.Token);
+                }
+                catch (TaskCanceledException)
+                {
+                    Console.WriteLine($"Playback of {path} cancelled");
+                }
+                finally
+                {
+                    await stream.FlushAsync().ConfigureAwait(false);
+                }
             }
+        }
+
+        public void StopAudio()
+        {
+            cancel.Cancel();
+            cancel.Dispose();
+            cancel = new CancellationTokenSource();
+            process.Kill();
         }
 
         private Process CreateStream(string path)

@@ -18,13 +18,16 @@ namespace MountAnBot.modules.musik
 
         private Random rand = new Random();
 
+        private bool loop;
+
         public MusikModule(AudioService service)
         {
             this.service = service;
         }
 
-        public async Task Play(bool loop, bool random, string parfilename)
+        public async Task Play(bool _loop, bool random, string parfilename)
         {
+            this.loop = _loop;
             if (service.Client != null)
             {
                 await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es wird gerade schon ein Song abgespielt"));
@@ -37,6 +40,8 @@ namespace MountAnBot.modules.musik
                 await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Du bist noch nicht mal in einem Voice-Channel drinnen. Pffft"));
                 return;
             }
+
+            await service.JoinAudio(voiceChan);
 
             do
             {
@@ -64,22 +69,29 @@ namespace MountAnBot.modules.musik
                 if (rightFiles.Count > 1)
                 {
                     await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt mehrere Dateien die diesen Namen beinhalten!"));
+                    await service.LeaveAudio();
                     return;
                 }
                 else if (rightFiles.Count == 0)
                 {
                     await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt keine Dateien die diesen Namen beinhalten!"));
+                    await service.LeaveAudio();
                     return;
                 }
 
                 string[] newParts = rightFiles[0].Split(Path.DirectorySeparatorChar);
                 await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song " + newParts[newParts.Length - 1] + " wird abgespielt..."));
 
-                await service.JoinAudio(voiceChan);
-
                 do
                 {
-                    await service.SendAudioAsync(Context.Channel, rightFiles[0]);
+                    try
+                    {
+                        await service.SendAudioAsync(Context.Channel, rightFiles[0]);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
                 } while (loop && !random);
             } while (loop && random);
 
@@ -148,14 +160,18 @@ namespace MountAnBot.modules.musik
         [Summary("Stoppt den Song")]
         public async Task SongStop()
         {
+            loop = false;
+            service.StopAudio();
             await service.LeaveAudio();
+            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song wurde gestoppt"));
         }
 
         [Command("song skip")]
         [Summary("Überspringt einen Song")]
         public async Task SongSkip()
         {
-            await service.LeaveAudio();
+            service.StopAudio();
+            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song wurde übersprungen"));
         }
     }
 }
