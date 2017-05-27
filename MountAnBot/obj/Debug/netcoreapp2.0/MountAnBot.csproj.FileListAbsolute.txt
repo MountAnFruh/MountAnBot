@@ -1,0 +1,10 @@
+E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\bin\Debug\netcoreapp2.0\MountAnBot.deps.json
+E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\bin\Debug\netcoreapp2.0\MountAnBot.runtimeconfig.json
+E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\bin\Debug\netcoreapp2.0\MountAnBot.runtimeconfig.dev.json
+E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\bin\Debug\netcoreapp2.0\MountAnBot.dll
+E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\bin\Debug\netcoreapp2.0\MountAnBot.pdb
+E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\obj\Debug\netcoreapp2.0\MountAnBot.csprojResolveAssemblyReference.cache
+E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\obj\Debug\netcoreapp2.0\MountAnBot.AssemblyInfo.cs
+E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\obj\Debug\netcoreapp2.0\MountAnBot.dll
+E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\obj\Debug\netcoreapp2.0\MountAnBot.pdb
+E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\obj\Debug\netcoreapp2.0\RemoveDepsFileConflicts.semaphore
