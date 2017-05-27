@@ -16,7 +16,7 @@ namespace MountAnBot.core
                 Name = user.Username,
                 IconUrl = user.GetAvatarUrl()
             };
-            builder.Title = "**" + title + "**";
+            builder.Title = title.Equals("") ? "" : "**" + title + "**";
             builder.Description = description;
             return builder;
         }

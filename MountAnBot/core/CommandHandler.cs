@@ -1,6 +1,7 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
 using MountAnBot.database;
+using MountAnBot.modules.musik;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -20,6 +21,10 @@ namespace MountAnBot.core
         {
             client = _map.Get<DiscordSocketClient>();
             commands = new CommandService();
+
+            AudioService audioService = new AudioService();
+            _map.Add(audioService);
+
             //_map.Add(commands);
             map = _map;
 
