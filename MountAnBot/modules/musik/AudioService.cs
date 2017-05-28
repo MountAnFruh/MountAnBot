@@ -92,7 +92,11 @@ namespace MountAnBot.modules.musik
             cancel.Cancel();
             cancel.Dispose();
             cancel = new CancellationTokenSource();
-            process.Kill();
+            if (process != null)
+            {
+                process.Kill();
+                process = null;
+            }
         }
 
         private Process CreateStream(string path)
@@ -100,7 +104,7 @@ namespace MountAnBot.modules.musik
             return Process.Start(new ProcessStartInfo
             {
                 FileName = ffmpegsource,
-                Arguments = $"-i \"{path}\" -af \"volume=0.15\" -f s16le -ar 48000 pipe:1",
+                Arguments = $"-hide_banner -loglevel panic -i \"{path}\" -ac 2 -af \"volume=0.15\" -f s16le -ar 48000 pipe:1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true
             });
