@@ -16,7 +16,7 @@ namespace MountAnBot.modules
     {
         private DBAccess dba = DBAccess.getInstance();
         private CommandService service;
-        private static string formatStr = "dd'.'M'.'yyyy";
+        private static string formatStr = "d'.'M'.'yyyy";
 
         public TerminModule(CommandService service)
         {
