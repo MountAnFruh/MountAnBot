@@ -20,6 +20,8 @@ namespace MountAnBot.modules.musik
         private Random rand = new Random();
 
         private bool loop;
+        private bool mute;
+        private string lastSong;
 
         public MusikModule(AudioService service, CommandService commandservice)
         {
@@ -83,6 +85,7 @@ namespace MountAnBot.modules.musik
 
                 string[] newParts = rightFiles[0].Split(Path.DirectorySeparatorChar);
                 await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song " + newParts[newParts.Length - 1] + " wird abgespielt..."));
+                lastSong = newParts[newParts.Length - 1];
 
                 do
                 {
@@ -189,6 +192,50 @@ namespace MountAnBot.modules.musik
         {
             service.StopAudio();
             await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song wurde übersprungen"));
+        }
+
+        [Command("song mute")]
+        [Summary("Schaltet die Textausgabe des Songs vom Bot aus")]
+        public async Task SongMute()
+        {
+            if(!mute)
+            {
+                mute = true;
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Textausgabe ausgeschalten"));
+            }
+            else
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Textausgabe ist schon ausgeschalten"));
+            }
+        }
+
+        [Command("song unmute")]
+        [Summary("Schaltet die Textausgabe des Songs vom Bot ein")]
+        public async Task SongUnmute()
+        {
+            if (mute)
+            {
+                mute = false;
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Textausgabe eingeschalten"));
+            }
+            else
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Textausgabe ist schon eingeschalten"));
+            }
+        }
+
+        [Command("song last")]
+        [Summary("Zeigt den letzten gespielten Song an")]
+        public async Task SongLast()
+        {
+            if (!lastSong.Equals(""))
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Der letzte Song der abgespielt worden ist, ist " + lastSong));
+            }
+            else
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt keinen zuletzt abgespielten Song"));
+            }
         }
     }
 }
