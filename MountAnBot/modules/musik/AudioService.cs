@@ -16,7 +16,7 @@ namespace MountAnBot.modules.musik
         public IAudioClient Client { get { return client; } }
         public string Musicdirectory { get { return musicdirectory; } }
         public string Ffmpegsource { get { return ffmpegsource; } }
-        public string Lastsong { get { return lastSong; } }
+        public string Lastsong { get { return lastSong; } set { lastSong = value; } }
         public bool Mute { get { return mute; } set { mute = value; } }
 
         private CancellationTokenSource cancel = new CancellationTokenSource();
@@ -73,15 +73,6 @@ namespace MountAnBot.modules.musik
             if (client != null)
             {
                 await Task.Delay(2000);
-                if (!path.StartsWith("http"))
-                {
-                    string[] newParts = path.Split(Path.DirectorySeparatorChar);
-                    lastSong = newParts[newParts.Length - 1];
-                }
-                else
-                {
-                    lastSong = path;
-                }
                 Console.WriteLine($"Starting playback of {path}");
                 process = CreateStream(path);
                 output = process.StandardOutput.BaseStream;

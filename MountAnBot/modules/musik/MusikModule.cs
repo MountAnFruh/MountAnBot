@@ -49,52 +49,45 @@ namespace MountAnBot.modules.musik
             {
                 List<string> rightFiles = new List<string>();
 
-                if (!parfilename.StartsWith("http"))
+                string[] files = Directory.GetFiles(service.Musicdirectory);
+                string[] parts = null;
+                foreach (string file in files)
                 {
-
-                    string[] files = Directory.GetFiles(service.Musicdirectory);
-                    string[] parts = null;
-                    foreach (string file in files)
+                    parts = file.Split(Path.DirectorySeparatorChar);
+                    if (parts[parts.Length - 1].ToLower().Replace("_", " ").Contains(parfilename.ToLower()))
                     {
-                        parts = file.Split(Path.DirectorySeparatorChar);
-                        if (parts[parts.Length - 1].ToLower().Replace("_", " ").Contains(parfilename.ToLower()))
-                        {
-                            rightFiles.Add(file);
-                        }
-                    }
-
-                    if (random)
-                    {
-                        int index = rand.Next(0, rightFiles.Count);
-                        List<string> rightFile = new List<string>();
-                        rightFile.Add(rightFiles[index]);
-                        rightFiles = rightFile;
-                    }
-
-                    if (rightFiles.Count > 1)
-                    {
-                        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt mehrere Dateien die diesen Namen beinhalten!"));
-                        await service.LeaveAudio();
-                        return;
-                    }
-                    else if (rightFiles.Count == 0)
-                    {
-                        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt keine Dateien die diesen Namen beinhalten!"));
-                        await service.LeaveAudio();
-                        return;
-                    }
-
-                    string[] newParts = rightFiles[0].Split(Path.DirectorySeparatorChar);
-                    if (!service.Mute)
-                    {
-                        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song " + newParts[newParts.Length - 1] + " wird abgespielt..."));
+                        rightFiles.Add(file);
                     }
                 }
-                else
+
+                if (random)
                 {
-                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Es wird versucht den Stream abzuspielen ..."));
-                    rightFiles.Add(parfilename);
+                    int index = rand.Next(0, rightFiles.Count);
+                    List<string> rightFile = new List<string>();
+                    rightFile.Add(rightFiles[index]);
+                    rightFiles = rightFile;
                 }
+
+                if (rightFiles.Count > 1)
+                {
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt mehrere Dateien die diesen Namen beinhalten!"));
+                    await service.LeaveAudio();
+                    return;
+                }
+                else if (rightFiles.Count == 0)
+                {
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt keine Dateien die diesen Namen beinhalten!"));
+                    await service.LeaveAudio();
+                    return;
+                }
+
+                string[] newParts = rightFiles[0].Split(Path.DirectorySeparatorChar);
+                if (!service.Mute)
+                {
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song " + newParts[newParts.Length - 1] + " wird abgespielt..."));
+                }
+
+                service.Lastsong = newParts[newParts.Length - 1];
 
                 do
                 {
@@ -182,6 +175,37 @@ namespace MountAnBot.modules.musik
             else
             {
                 await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song loop [Name]"));
+            }
+        }
+
+        [Command("song stream", RunMode = RunMode.Async)]
+        [Summary("Spielt einen Stream ab (wenn möglich)")]
+        public async Task SongStream(params string[] input)
+        {
+            if (input.Length == 1)
+            {
+                if (service.Client != null)
+                {
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es wird gerade schon ein Song abgespielt"));
+                    return;
+                }
+
+                IVoiceChannel voiceChan = (Context.User as IVoiceState).VoiceChannel;
+                if (voiceChan == null)
+                {
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Du bist noch nicht mal in einem Voice-Channel drinnen. Pffft"));
+                    return;
+                }
+
+                await service.JoinAudio(voiceChan);
+
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Es wird versucht den Stream abzuspielen ..."));
+                await service.SendAudioAsync(Context.Channel, input[0]);
+                await service.LeaveAudio();
+            }
+            else
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song stream [URL/File/etc]"));
             }
         }
 
