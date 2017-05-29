@@ -49,42 +49,51 @@ namespace MountAnBot.modules.musik
             {
                 List<string> rightFiles = new List<string>();
 
-                string[] files = Directory.GetFiles(service.Musicdirectory);
-                string[] parts = null;
-                foreach (string file in files)
+                if (!parfilename.StartsWith("http"))
                 {
-                    parts = file.Split(Path.DirectorySeparatorChar);
-                    if (parts[parts.Length - 1].ToLower().Replace("_"," ").Contains(parfilename.ToLower()))
+
+                    string[] files = Directory.GetFiles(service.Musicdirectory);
+                    string[] parts = null;
+                    foreach (string file in files)
                     {
-                        rightFiles.Add(file);
+                        parts = file.Split(Path.DirectorySeparatorChar);
+                        if (parts[parts.Length - 1].ToLower().Replace("_", " ").Contains(parfilename.ToLower()))
+                        {
+                            rightFiles.Add(file);
+                        }
+                    }
+
+                    if (random)
+                    {
+                        int index = rand.Next(0, rightFiles.Count);
+                        List<string> rightFile = new List<string>();
+                        rightFile.Add(rightFiles[index]);
+                        rightFiles = rightFile;
+                    }
+
+                    if (rightFiles.Count > 1)
+                    {
+                        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt mehrere Dateien die diesen Namen beinhalten!"));
+                        await service.LeaveAudio();
+                        return;
+                    }
+                    else if (rightFiles.Count == 0)
+                    {
+                        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt keine Dateien die diesen Namen beinhalten!"));
+                        await service.LeaveAudio();
+                        return;
+                    }
+
+                    string[] newParts = rightFiles[0].Split(Path.DirectorySeparatorChar);
+                    if (!service.Mute)
+                    {
+                        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song " + newParts[newParts.Length - 1] + " wird abgespielt..."));
                     }
                 }
-
-                if (random)
+                else
                 {
-                    int index = rand.Next(0, rightFiles.Count);
-                    List<string> rightFile = new List<string>();
-                    rightFile.Add(rightFiles[index]);
-                    rightFiles = rightFile;
-                }
-
-                if (rightFiles.Count > 1)
-                {
-                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt mehrere Dateien die diesen Namen beinhalten!"));
-                    await service.LeaveAudio();
-                    return;
-                }
-                else if (rightFiles.Count == 0)
-                {
-                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt keine Dateien die diesen Namen beinhalten!"));
-                    await service.LeaveAudio();
-                    return;
-                }
-
-                string[] newParts = rightFiles[0].Split(Path.DirectorySeparatorChar);
-                if (!service.Mute)
-                {
-                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song " + newParts[newParts.Length - 1] + " wird abgespielt..."));
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Es wird versucht den Stream abzuspielen ..."));
+                    rightFiles.Add(parfilename);
                 }
 
                 do

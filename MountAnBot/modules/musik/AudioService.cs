@@ -73,8 +73,15 @@ namespace MountAnBot.modules.musik
             if (client != null)
             {
                 await Task.Delay(2000);
-                string[] newParts = path.Split(Path.DirectorySeparatorChar);
-                lastSong = newParts[newParts.Length - 1];
+                if (!path.StartsWith("http"))
+                {
+                    string[] newParts = path.Split(Path.DirectorySeparatorChar);
+                    lastSong = newParts[newParts.Length - 1];
+                }
+                else
+                {
+                    lastSong = path;
+                }
                 Console.WriteLine($"Starting playback of {path}");
                 process = CreateStream(path);
                 output = process.StandardOutput.BaseStream;
