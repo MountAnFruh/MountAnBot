@@ -54,7 +54,7 @@ namespace MountAnBot.modules.musik
                 foreach (string file in files)
                 {
                     parts = file.Split(Path.DirectorySeparatorChar);
-                    if (parts[parts.Length - 1].ToLower().Contains(parfilename.ToLower()))
+                    if (parts[parts.Length - 1].ToLower().Replace("_"," ").Contains(parfilename.ToLower()))
                     {
                         rightFiles.Add(file);
                     }
