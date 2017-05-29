@@ -20,8 +20,6 @@ namespace MountAnBot.modules.musik
         private Random rand = new Random();
 
         private bool loop;
-        private bool mute;
-        private string lastSong;
 
         public MusikModule(AudioService service, CommandService commandservice)
         {
@@ -84,8 +82,10 @@ namespace MountAnBot.modules.musik
                 }
 
                 string[] newParts = rightFiles[0].Split(Path.DirectorySeparatorChar);
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song " + newParts[newParts.Length - 1] + " wird abgespielt..."));
-                lastSong = newParts[newParts.Length - 1];
+                if (!service.Mute)
+                {
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song " + newParts[newParts.Length - 1] + " wird abgespielt..."));
+                }
 
                 do
                 {
@@ -198,14 +198,14 @@ namespace MountAnBot.modules.musik
         [Summary("Schaltet die Textausgabe des Songs vom Bot aus")]
         public async Task SongMute()
         {
-            if(!mute)
+            if(!service.Mute)
             {
-                mute = true;
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Textausgabe ausgeschalten"));
+                service.Mute = true;
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Textausgabe des Songs ausgeschalten"));
             }
             else
             {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Textausgabe ist schon ausgeschalten"));
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Textausgabe des Songs ist schon ausgeschalten"));
             }
         }
 
@@ -213,14 +213,14 @@ namespace MountAnBot.modules.musik
         [Summary("Schaltet die Textausgabe des Songs vom Bot ein")]
         public async Task SongUnmute()
         {
-            if (mute)
+            if (service.Mute)
             {
-                mute = false;
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Textausgabe eingeschalten"));
+                service.Mute = false;
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Textausgabe des Songs eingeschalten"));
             }
             else
             {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Textausgabe ist schon eingeschalten"));
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Textausgabe des Songs ist schon eingeschalten"));
             }
         }
 
@@ -228,9 +228,9 @@ namespace MountAnBot.modules.musik
         [Summary("Zeigt den letzten gespielten Song an")]
         public async Task SongLast()
         {
-            if (!lastSong.Equals(""))
+            if (!service.Lastsong.Equals(""))
             {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Der letzte Song der abgespielt worden ist, ist " + lastSong));
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Der letzte Song der abgespielt worden ist, ist \"" + service.Lastsong + "\""));
             }
             else
             {
