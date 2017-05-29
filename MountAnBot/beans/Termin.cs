@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace MountAnBot.beans
@@ -13,6 +14,8 @@ namespace MountAnBot.beans
         private string bezeichnung;
         private DateTime vondate;
         private DateTime bisdate;
+
+        private static string formatStr = "dd'.'MM'.'yyyy";
 
         public Termin(string bezeichnung, DateTime vondate, DateTime bisdate)
         {
@@ -33,9 +36,9 @@ namespace MountAnBot.beans
             string bisdateStr = "";
             if (!bisdate.Date.Equals(vondate.Date))
             {
-                bisdateStr = " - " + bisdate.Day + "." + bisdate.Month + "." + bisdate.Year;
+                bisdateStr = " - " + bisdate.ToString(formatStr, new CultureInfo("de-DE"));
             }
-            return "__**" + vondate.Day + "." + vondate.Month + "." + vondate.Year + bisdateStr + "**__: " + bezeichnung;
+            return "__**" + vondate.ToString(formatStr, new CultureInfo("de-DE")) + bisdateStr + "**__: " + bezeichnung;
         }
 
         public int CompareTo(Termin ter)
