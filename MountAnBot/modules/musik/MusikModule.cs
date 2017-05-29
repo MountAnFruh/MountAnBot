@@ -15,13 +15,15 @@ namespace MountAnBot.modules.musik
         private readonly AudioService service = new AudioService();
 
         private DBAccess dba = DBAccess.getInstance();
+        private CommandService commandservice;
 
         private Random rand = new Random();
 
         private bool loop;
 
-        public MusikModule(AudioService service)
+        public MusikModule(AudioService service, CommandService commandservice)
         {
+            this.commandservice = commandservice;
             this.service = service;
         }
 
@@ -98,6 +100,21 @@ namespace MountAnBot.modules.musik
             await service.LeaveAudio();
 
             await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song(s) fertig abgespielt"));
+        }
+
+        [Command("song help"), Alias("song")]
+        [Summary("Gibt dir die Hilfe die du brauchst")]
+        public async Task SongHelp()
+        {
+            string message = "";
+            foreach (CommandInfo info in commandservice.Commands)
+            {
+                if (info.Name.StartsWith("song"))
+                {
+                    message += "\n**" + info.Name + "** -> " + info.Summary;
+                }
+            }
+            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "Alle Song-Commands:", message));
         }
 
         [Command("song play", RunMode = RunMode.Async)]

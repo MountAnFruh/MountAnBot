@@ -104,7 +104,7 @@ namespace MountAnBot.modules.musik
             return Process.Start(new ProcessStartInfo
             {
                 FileName = ffmpegsource,
-                Arguments = $"-loglevel panic -i \"{path}\" -ac 2 -af \"volume=1\" -f s16le -ar 48000 pipe:1",
+                Arguments = $"-loglevel panic -i \"{path}\" -ac 2 -af \"volume=0.15\" -f s16le -ar 48000 pipe:1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true
             });

@@ -50,7 +50,7 @@ namespace MountAnBot.core
 
             IResult result = await commands.ExecuteAsync(context, argPos, map);
 
-            if (!result.IsSuccess) await message.Channel.SendMessageAsync("**ERROR:** " + result.ErrorReason);
+            if (!result.IsSuccess && result.Error != CommandError.UnknownCommand) await message.Channel.SendMessageAsync("**ERROR:** " + result.ErrorReason);
         }
     }
 }

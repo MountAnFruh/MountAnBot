@@ -5,6 +5,7 @@ using MountAnBot.core;
 using MountAnBot.database;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,13 +16,14 @@ namespace MountAnBot.modules
     {
         private DBAccess dba = DBAccess.getInstance();
         private CommandService service;
+        private static string formatStr = "dd'.'M'.'yyyy";
 
         public TerminModule(CommandService service)
         {
             this.service = service;
         }
 
-        [Command("termin help")]
+        [Command("termin help"), Alias("termin")]
         [Summary("Damit bekommst du deine Hilfe die du brauchst")]
         public async Task TerminHelp()
         {
@@ -87,11 +89,12 @@ namespace MountAnBot.modules
                 Termin termin;
                 if(input.Length == 2)
                 {
-                    termin = new Termin(input[0], DateTime.Parse(input[1]));
+                    termin = new Termin(input[0], DateTime.ParseExact(input[1], formatStr, new CultureInfo("de-DE")));
                 }
                 else
                 {
-                    termin = new Termin(input[0], DateTime.Parse(input[1]), DateTime.Parse(input[2]));
+                    termin = new Termin(input[0], DateTime.ParseExact(input[1], formatStr, new CultureInfo("de-DE"))
+                                                , DateTime.ParseExact(input[2], formatStr, new CultureInfo("de-DE")));
                 }
                 bool success = dba.removeTermin(termin);
                 if(success)
@@ -126,11 +129,12 @@ namespace MountAnBot.modules
                     Termin termin;
                     if (input.Length == 2)
                     {
-                        termin = new Termin(input[0], DateTime.Parse(input[1]));
+                        termin = new Termin(input[0], DateTime.ParseExact(input[1], formatStr, new CultureInfo("de-DE")));
                     }
                     else
                     {
-                        termin = new Termin(input[0], DateTime.Parse(input[1]), DateTime.Parse(input[2]));
+                        termin = new Termin(input[0], DateTime.ParseExact(input[1], formatStr, new CultureInfo("de-DE"))
+                                                    , DateTime.ParseExact(input[2], formatStr, new CultureInfo("de-DE")));
                     }
                     bool success = dba.addTermin(termin);
                     if (success)
