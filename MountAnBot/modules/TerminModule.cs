@@ -88,12 +88,11 @@ namespace MountAnBot.modules
                 Termin termin;
                 if(input.Length == 2)
                 {
-                    termin = new Termin(input[0], DateTime.ParseExact(input[1], Termin.Formatstring, new CultureInfo("de-DE")));
+                    termin = new Termin(input[0], input[1]);
                 }
                 else
                 {
-                    termin = new Termin(input[0], DateTime.ParseExact(input[1], Termin.Formatstring, new CultureInfo("de-DE"))
-                                                , DateTime.ParseExact(input[2], Termin.Formatstring, new CultureInfo("de-DE")));
+                    termin = new Termin(input[0], input[1], input[2]);
                 }
                 bool success = dba.removeTermin(termin);
                 if(success)
@@ -128,12 +127,11 @@ namespace MountAnBot.modules
                     Termin termin;
                     if (input.Length == 2)
                     {
-                        termin = new Termin(input[0], DateTime.ParseExact(input[1], Termin.Formatstring, new CultureInfo("de-DE")));
+                        termin = new Termin(input[0], input[1]);
                     }
                     else
                     {
-                        termin = new Termin(input[0], DateTime.ParseExact(input[1], Termin.Formatstring, new CultureInfo("de-DE"))
-                                                    , DateTime.ParseExact(input[2], Termin.Formatstring, new CultureInfo("de-DE")));
+                        termin = new Termin(input[0], input[1], input[2]);
                     }
                     bool success = dba.addTermin(termin);
                     if (success)

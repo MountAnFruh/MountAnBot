@@ -32,6 +32,20 @@ namespace MountAnBot.beans
             this.bisdate = date;
         }
 
+        public Termin(string bezeichnung, string vondate, string bisdate)
+        {
+            this.bezeichnung = bezeichnung;
+            this.vondate = DateTime.ParseExact(vondate, formatStr, null);
+            this.bisdate = DateTime.ParseExact(bisdate, formatStr, null);
+        }
+
+        public Termin(string bezeichnung, string date)
+        {
+            this.bezeichnung = bezeichnung;
+            this.vondate = DateTime.ParseExact(date, formatStr, null);
+            this.bisdate = DateTime.ParseExact(date, formatStr, null);
+        }
+
         public override string ToString()
         {
             string bisdateStr = "";
