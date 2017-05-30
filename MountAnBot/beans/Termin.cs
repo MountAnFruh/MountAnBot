@@ -10,6 +10,7 @@ namespace MountAnBot.beans
         public string Bezeichnung { get { return bezeichnung; } }
         public DateTime Vondate { get { return vondate; } }
         public DateTime Bisdate { get { return bisdate; } }
+        public static string Formatstring { get { return formatStr; } }
 
         private string bezeichnung;
         private DateTime vondate;

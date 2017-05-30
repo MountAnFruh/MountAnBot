@@ -2,6 +2,7 @@
 using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace MountAnBot.database
@@ -106,7 +107,9 @@ namespace MountAnBot.database
 
         public bool removeTermin(Termin termin)
         {
-            string sqlString = "DELETE FROM termin WHERE bezeichnung = '" + termin.Bezeichnung + "' AND vondatum = '" + termin.Vondate + "' AND bisdatum = '" + termin.Bisdate + "';";
+            string sqlString = "DELETE FROM termin WHERE bezeichnung = '" + termin.Bezeichnung + "' AND vondatum = '" +
+                                termin.Vondate.ToString(Termin.Formatstring, new CultureInfo("de-DE")) + "' AND bisdatum = '" +
+                                termin.Bisdate.ToString(Termin.Formatstring, new CultureInfo("de-DE")) + "';";
             NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
             int rows = command.ExecuteNonQuery();
             if(rows == 0)
@@ -120,7 +123,9 @@ namespace MountAnBot.database
         {
             try
             {
-                string sqlString = "INSERT INTO termin(bezeichnung, vondatum, bisdatum) VALUES ('" + termin.Bezeichnung + "','" + termin.Vondate + "','" + termin.Bisdate + "');";
+                string sqlString = "INSERT INTO termin(bezeichnung, vondatum, bisdatum) VALUES ('" + termin.Bezeichnung + "','" +
+                                    termin.Vondate.ToString(Termin.Formatstring, new CultureInfo("de-DE")) + "','" +
+                                    termin.Bisdate.ToString(Termin.Formatstring, new CultureInfo("de-DE")) + "');";
                 NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
                 command.ExecuteNonQuery();
                 return true;
