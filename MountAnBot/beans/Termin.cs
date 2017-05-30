@@ -16,7 +16,7 @@ namespace MountAnBot.beans
         private DateTime vondate;
         private DateTime bisdate;
 
-        private static string formatStr = "dd'.'MM'.'yyyy";
+        private static string formatStr = "d'.'M'.'yyyy";
 
         public Termin(string bezeichnung, DateTime vondate, DateTime bisdate)
         {
