@@ -23,7 +23,6 @@ namespace MountAnBot.beans
             this.bezeichnung = bezeichnung;
             this.vondate = vondate;
             this.bisdate = bisdate;
-            Console.WriteLine("vondate: " + vondate + " | bisdate: " + bisdate);
         }
 
         public Termin(string bezeichnung, DateTime date)
@@ -31,7 +30,6 @@ namespace MountAnBot.beans
             this.bezeichnung = bezeichnung;
             this.vondate = date;
             this.bisdate = date;
-            Console.WriteLine("date: " + date);
         }
 
         public override string ToString()
@@ -39,9 +37,9 @@ namespace MountAnBot.beans
             string bisdateStr = "";
             if (!bisdate.Date.Equals(vondate.Date))
             {
-                bisdateStr = " - " + bisdate.ToString(formatStr, new CultureInfo("de-DE"));
+                bisdateStr = " - " + bisdate.ToString(formatStr, CultureInfo.InvariantCulture);
             }
-            return "__**" + vondate.ToString(formatStr, new CultureInfo("de-DE")) + bisdateStr + "**__: " + bezeichnung;
+            return "__**" + vondate.ToString(formatStr, CultureInfo.InvariantCulture) + bisdateStr + "**__: " + bezeichnung;
         }
 
         public int CompareTo(Termin ter)

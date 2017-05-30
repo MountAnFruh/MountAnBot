@@ -7,3 +7,4 @@ E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\obj\Debug
 E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\obj\Debug\netcoreapp2.0\MountAnBot.AssemblyInfo.cs
 E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\obj\Debug\netcoreapp2.0\MountAnBot.dll
 E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\obj\Debug\netcoreapp2.0\MountAnBot.pdb
+E:\Users\Robbo13\Eigene Programme\plsletthiswork\MountAnBot\MountAnBot\obj\Debug\netcoreapp2.0\RemoveDepsFileConflicts.semaphore
