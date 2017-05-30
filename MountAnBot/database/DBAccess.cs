@@ -126,6 +126,7 @@ namespace MountAnBot.database
                 string sqlString = "INSERT INTO termin(bezeichnung, vondatum, bisdatum) VALUES ('" + termin.Bezeichnung + "','" +
                                     termin.Vondate.ToString(Termin.Formatstring, CultureInfo.InvariantCulture) + "','" +
                                     termin.Bisdate.ToString(Termin.Formatstring, CultureInfo.InvariantCulture) + "');";
+                Console.WriteLine(sqlString);
                 NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
                 command.ExecuteNonQuery();
                 return true;
