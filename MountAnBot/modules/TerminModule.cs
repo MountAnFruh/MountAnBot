@@ -88,12 +88,12 @@ namespace MountAnBot.modules
                 Termin termin;
                 if(input.Length == 2)
                 {
-                    termin = new Termin(input[0], DateTime.ParseExact(input[1], Termin.Formatstring, CultureInfo.InvariantCulture));
+                    termin = new Termin(input[0], DateTime.ParseExact(input[1], Termin.Formatstring, new CultureInfo("de-DE")));
                 }
                 else
                 {
-                    termin = new Termin(input[0], DateTime.ParseExact(input[1], Termin.Formatstring, CultureInfo.InvariantCulture)
-                                                , DateTime.ParseExact(input[2], Termin.Formatstring, CultureInfo.InvariantCulture));
+                    termin = new Termin(input[0], DateTime.ParseExact(input[1], Termin.Formatstring, new CultureInfo("de-DE"))
+                                                , DateTime.ParseExact(input[2], Termin.Formatstring, new CultureInfo("de-DE")));
                 }
                 bool success = dba.removeTermin(termin);
                 if(success)
@@ -128,12 +128,12 @@ namespace MountAnBot.modules
                     Termin termin;
                     if (input.Length == 2)
                     {
-                        termin = new Termin(input[0], DateTime.ParseExact(input[1], Termin.Formatstring, CultureInfo.InvariantCulture));
+                        termin = new Termin(input[0], DateTime.ParseExact(input[1], Termin.Formatstring, new CultureInfo("de-DE")));
                     }
                     else
                     {
-                        termin = new Termin(input[0], DateTime.ParseExact(input[1], Termin.Formatstring, CultureInfo.InvariantCulture)
-                                                    , DateTime.ParseExact(input[2], Termin.Formatstring, CultureInfo.InvariantCulture));
+                        termin = new Termin(input[0], DateTime.ParseExact(input[1], Termin.Formatstring, new CultureInfo("de-DE"))
+                                                    , DateTime.ParseExact(input[2], Termin.Formatstring, new CultureInfo("de-DE")));
                     }
                     bool success = dba.addTermin(termin);
                     if (success)
