@@ -37,9 +37,9 @@ namespace MountAnBot.beans
             string bisdateStr = "";
             if (!bisdate.Date.Equals(vondate.Date))
             {
-                bisdateStr = " - " + bisdate.ToString(formatStr, CultureInfo.InvariantCulture);
+                bisdateStr = " - " + bisdate.ToString(formatStr);
             }
-            return "__**" + vondate.ToString(formatStr, CultureInfo.InvariantCulture) + bisdateStr + "**__: " + bezeichnung;
+            return "__**" + vondate.ToString(formatStr) + bisdateStr + "**__: " + bezeichnung;
         }
 
         public int CompareTo(Termin ter)
