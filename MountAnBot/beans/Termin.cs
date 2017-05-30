@@ -22,6 +22,7 @@ namespace MountAnBot.beans
             this.bezeichnung = bezeichnung;
             this.vondate = vondate;
             this.bisdate = bisdate;
+            Console.WriteLine("vondate: " + vondate + " | bisdate: " + bisdate);
         }
 
         public Termin(string bezeichnung, DateTime date)
@@ -29,6 +30,7 @@ namespace MountAnBot.beans
             this.bezeichnung = bezeichnung;
             this.vondate = date;
             this.bisdate = date;
+            Console.WriteLine("date: " + date);
         }
 
         public override string ToString()
