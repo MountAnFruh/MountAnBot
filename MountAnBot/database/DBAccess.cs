@@ -128,7 +128,7 @@ namespace MountAnBot.database
 
         public bool removeTermin(Termin termin)
         {
-            string sqlString = "DELETE FROM termin WHERE bezeichnung = '" + termin.Bezeichnung + "' AND vondatum = '" +
+            string sqlString = "DELETE FROM termin WHERE bezeichnung = '" + termin.Bezeichnung.Replace("'", "''") + "' AND vondatum = '" +
                                 termin.Vondate.ToString("yyyy-MM-dd") + "' AND bisdatum = '" +
                                 termin.Bisdate.ToString("yyyy-MM-dd") + "';";
             NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
@@ -144,7 +144,7 @@ namespace MountAnBot.database
         {
             try
             {
-                string sqlString = "INSERT INTO termin(bezeichnung, vondatum, bisdatum) VALUES ('" + termin.Bezeichnung + "','" +
+                string sqlString = "INSERT INTO termin(bezeichnung, vondatum, bisdatum) VALUES ('" + termin.Bezeichnung.Replace("'", "''") + "','" +
                                     termin.Vondate.ToString("yyyy-MM-dd") + "','" +
                                     termin.Bisdate.ToString("yyyy-MM-dd") + "');";
                 NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
