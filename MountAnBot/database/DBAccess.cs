@@ -93,7 +93,7 @@ namespace MountAnBot.database
         public List<Termin> getNextTermine()
         {
             List<Termin> termine = new List<Termin>();
-            string sqlString = "SELECT * FROM termin WHERE vondatum = (SELECT MIN(vondatum) FROM termin WHERE vondatum > current_date) ORDER BY vondatum";
+            string sqlString = "SELECT * FROM termin WHERE vondatum >= current_date AND (vondatum <= current_date + interval '5' day OR vondatum <= current_date + interval '5' day) ORDER BY vondatum";
             NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
             NpgsqlDataReader dr = command.ExecuteReader();
             while (dr.Read())

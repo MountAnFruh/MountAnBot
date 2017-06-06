@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace MountAnBot.modules.musik
 {
+    [Name("Music")]
     public class MusikModule : ModuleBase
     {
         private readonly AudioService service = new AudioService();
@@ -49,7 +50,7 @@ namespace MountAnBot.modules.musik
             {
                 List<string> rightFiles = new List<string>();
 
-                string[] files = Directory.GetFiles(service.Musicdirectory);
+                string[] files = Directory.GetFiles(dba.getSetting("musicdirectory"));
                 string[] parts = null;
                 foreach (string file in files)
                 {

@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using MountAnBot.database;
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MountAnBot.core
@@ -13,7 +14,8 @@ namespace MountAnBot.core
 
         public static void Main(string[] args)
         {
-            new Program().Start().GetAwaiter().GetResult();
+            Program program = new Program();
+            program.Start().GetAwaiter().GetResult();
         }
 
         private DiscordSocketClient client;
@@ -41,8 +43,12 @@ namespace MountAnBot.core
                 handler = new CommandHandler();
                 await handler.Install(map);
 
+                LooperThread looper = new LooperThread(client);
+                looper.Start();
+
                 await Task.Delay(-1);
 
+                looper.Stop();
                 dba.disconnect();
             }
             catch (Exception ex)

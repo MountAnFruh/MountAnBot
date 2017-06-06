@@ -14,8 +14,6 @@ namespace MountAnBot.modules.musik
     public class AudioService
     {
         public IAudioClient Client { get { return client; } }
-        public string Musicdirectory { get { return musicdirectory; } }
-        public string Ffmpegsource { get { return ffmpegsource; } }
         public string Lastsong { get { return lastSong; } set { lastSong = value; } }
         public bool Mute { get { return mute; } set { mute = value; } }
 
@@ -25,14 +23,12 @@ namespace MountAnBot.modules.musik
         private Stream output;
         private Process process;
 
-        private string musicdirectory, ffmpegsource;
         private string lastSong = "";
         private bool mute;
 
         public AudioService()
         {
-            musicdirectory = dba.getSetting("musicdirectory");
-            ffmpegsource = dba.getSetting("ffmpegsource");
+            mute = bool.Parse(dba.getSetting("musicmute"));
         }
 
         public async Task JoinAudio(IVoiceChannel target)
@@ -108,7 +104,7 @@ namespace MountAnBot.modules.musik
         {
             return Process.Start(new ProcessStartInfo
             {
-                FileName = ffmpegsource,
+                FileName = dba.getSetting("ffmpegsource"),
                 Arguments = $"-loglevel panic -i \"{path}\" -ac 2 -af \"volume=0.15\" -f s16le -ar 48000 pipe:1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true
