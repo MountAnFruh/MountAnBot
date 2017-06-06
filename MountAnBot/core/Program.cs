@@ -14,6 +14,7 @@ namespace MountAnBot.core
 
         public static void Main(string[] args)
         {
+            System.Globalization.CultureInfo.CurrentCulture.ClearCachedData();
             Program program = new Program();
             program.Start().GetAwaiter().GetResult();
         }
