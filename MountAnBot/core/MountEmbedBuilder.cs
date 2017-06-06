@@ -20,7 +20,7 @@ namespace MountAnBot.core
             builder.Description = description;
             builder.Footer = new EmbedFooterBuilder()
             {
-                Text = DateTime.Now.ToString("dd.MM.yyyy - hh:mm:ss")
+                Text = DateTime.Now.ToString("dd.MM.yyyy - HH:mm:ss")
             };
             return builder;
         }
