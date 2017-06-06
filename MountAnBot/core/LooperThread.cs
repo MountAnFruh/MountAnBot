@@ -41,9 +41,9 @@ namespace MountAnBot.core
             while(thread.IsAlive)
             {
 
+                // DO SOMETHING WHEN NEXT DAY
                 if(currDate.Date != DateTime.Now.Date)
                 {
-                    // DO SOMETHING WHEN NEXT DAY
                     if(client.ConnectionState == Discord.ConnectionState.Connected)
                     {
                         SocketChannel channel = client.GetChannel(ulong.Parse(dba.getSetting("terminchannel")));

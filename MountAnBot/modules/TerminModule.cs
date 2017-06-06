@@ -44,9 +44,9 @@ namespace MountAnBot.modules
             string message = "";
             foreach (Termin termin in dba.getAllZukTermine())
             {
-                message += "\n+ " + termin.ToString();
+                message += "\n" + termin.ToString();
             }
-            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255,255,0),Context.User,"Terminliste:",message));
+            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255,255,0),Context.User,"Terminliste:",message, "diff"));
         }
 
         [Command("termin next")]
@@ -59,9 +59,9 @@ namespace MountAnBot.modules
 
             foreach (Termin termin in termine)
             {
-                message += "\n-> " + termin.ToString();
+                message += "\n" + termin.ToString();
             }
-            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255,255,0),Context.User,title,message));
+            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255,255,0),Context.User,title,message,"diff"));
         }
 
         [Command("termin list all")]
@@ -71,9 +71,9 @@ namespace MountAnBot.modules
             string message = "";
             foreach (Termin termin in dba.getAllTermine())
             {
-                message += "\n+ " + termin.ToString();
+                message += "\n" + termin.ToString();
             }
-            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255,255,0),Context.User,"Terminliste:",message));
+            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255,255,0),Context.User,"Terminliste:",message, "diff"));
         }
 
         [Command("termin remove")]

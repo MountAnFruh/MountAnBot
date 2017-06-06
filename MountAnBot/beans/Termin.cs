@@ -48,12 +48,30 @@ namespace MountAnBot.beans
 
         public override string ToString()
         {
+            string message = "";
+            if (vondate > DateTime.Now.Date.AddDays(4))
+            {
+                message += "--- ";
+            }
+            else if (vondate > DateTime.Now.Date.AddDays(2))
+            {
+                message += "+   ";
+            }
+            else if (vondate > DateTime.Now.Date)
+            {
+                message += "-   ";
+            }
+            else
+            {
+                message += "0   ";
+            }
             string bisdateStr = "";
             if (!bisdate.Date.Equals(vondate.Date))
             {
-                bisdateStr = " - " + bisdate.ToString(formatStr);
+                bisdateStr = " - " + bisdate.ToString("dd.MM.yyyy");
             }
-            return "__**" + vondate.ToString(formatStr) + bisdateStr + "**__: " + bezeichnung;
+            message += vondate.ToString("dd.MM.yyyy") + bisdateStr + ": " + bezeichnung;
+            return message;
         }
 
         public int CompareTo(Termin ter)

@@ -43,8 +43,29 @@ namespace MountAnBot.database
         {
             string sqlString = "SELECT MAX(value) FROM settings WHERE description = '" + description + "';";
             NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
-            string value = command.ExecuteScalar().ToString();
-            return value;
+            object value = command.ExecuteScalar();
+            if (value == null)
+            {
+                return null;
+            }
+            else
+            {
+                return value.ToString();
+            }
+        }
+
+        public Dictionary<string, string> getSettings()
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            string sqlString = "SELECT description, value FROM settings";
+            NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
+            NpgsqlDataReader dr = command.ExecuteReader();
+            while (dr.Read())
+            {
+                dict.Add("" + dr[0], "" + dr[1]);
+            }
+            dr.Close();
+            return dict;
         }
 
         public void setSetting(string description, string value)

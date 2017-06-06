@@ -15,7 +15,7 @@ namespace MountAnBot.modules.musik
     {
         public IAudioClient Client { get { return client; } }
         public string Lastsong { get { return lastSong; } set { lastSong = value; } }
-        public bool Mute { get { return mute; } set { mute = value; } }
+        public bool Mute { get { return bool.Parse(dba.getSetting("musicmute")); } set { dba.setSetting("musicmute", ""+value); } }
 
         private CancellationTokenSource cancel = new CancellationTokenSource();
         private IAudioClient client;
@@ -24,12 +24,6 @@ namespace MountAnBot.modules.musik
         private Process process;
 
         private string lastSong = "";
-        private bool mute;
-
-        public AudioService()
-        {
-            mute = bool.Parse(dba.getSetting("musicmute"));
-        }
 
         public async Task JoinAudio(IVoiceChannel target)
         {
