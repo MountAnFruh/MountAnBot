@@ -51,7 +51,7 @@ namespace MountAnBot.beans
             string message = "";
             if (vondate > DateTime.Now.Date.AddDays(4))
             {
-                message += "--- ";
+                message += "0   ";
             }
             else if (vondate > DateTime.Now.Date.AddDays(2))
             {
@@ -63,7 +63,7 @@ namespace MountAnBot.beans
             }
             else
             {
-                message += "0   ";
+                message += "--- ";
             }
             string bisdateStr = "";
             if (!bisdate.Date.Equals(vondate.Date))
