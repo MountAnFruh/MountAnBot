@@ -1,4 +1,5 @@
-﻿using MountAnBot.beans;
+﻿using Discord;
+using MountAnBot.beans;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -66,6 +67,22 @@ namespace MountAnBot.database
             }
             dr.Close();
             return dict;
+        }
+
+        public bool isAuthorized(string description, IGuildUser guser)
+        {
+            bool authorized = false;
+            foreach (ulong roleId in guser.RoleIds)
+            {
+                foreach (string dbroleId in this.getSetting(description).Split(';'))
+                {
+                    if (roleId.Equals(ulong.Parse(dbroleId)))
+                    {
+                        authorized = true;
+                    }
+                }
+            }
+            return authorized;
         }
 
         public void setSetting(string description, string value)

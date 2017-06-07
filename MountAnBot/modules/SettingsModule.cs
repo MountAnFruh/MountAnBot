@@ -21,11 +21,10 @@ namespace MountAnBot.modules
         }
 
         [Command("settings update")]
-        [Summary("Ändert die Einstellung")]
+        [Summary("Ändert die Einstellung | Nur für Autorisierte!")]
         public async Task SettingsUpdate(params string[] input)
         {
-            IGuildUser guser = (IGuildUser) Context.User;
-            if(guser.GuildPermissions.ManageGuild == true)
+            if (dba.isAuthorized("authorizedsettingsroles", (IGuildUser)Context.User))
             {
                 if(input.Length == 2)
                 {
@@ -46,14 +45,17 @@ namespace MountAnBot.modules
                     await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !settings update [Beschreibung] [Wert]"));
                 }
             }
+            else
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", MountEmbedBuilder.WEAKMESSAGE));
+            }
         }
 
         [Command("settings list")]
-        [Summary("Liefert alle Beschreibungen mit deren Werten zurück")]
+        [Summary("Liefert alle Beschreibungen mit deren Werten zurück | Nur für Autorisierte!")]
         public async Task SettingsDescriptions()
         {
-            IGuildUser guser = (IGuildUser)Context.User;
-            if (guser.GuildPermissions.ManageGuild == true)
+            if (dba.isAuthorized("authorizedsettingsroles", (IGuildUser)Context.User))
             {
                 string message = "";
                 Dictionary<string, string> dict = dba.getSettings();
@@ -63,14 +65,17 @@ namespace MountAnBot.modules
                 }
                 await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "Settingsliste:", message));
             }
+            else
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", MountEmbedBuilder.WEAKMESSAGE));
+            }
         }
 
         [Command("settings help"), Alias("settings")]
-        [Summary("Gibt dir die Hilfe die du brauchst")]
+        [Summary("Gibt dir die Hilfe die du brauchst | Nur für Autorisierte!")]
         public async Task SongHelp()
         {
-            IGuildUser guser = (IGuildUser)Context.User;
-            if (guser.GuildPermissions.ManageGuild == true)
+            if (dba.isAuthorized("authorizedsettingsroles", (IGuildUser)Context.User))
             {
                 string message = "";
                 foreach (CommandInfo info in commandservice.Commands)
@@ -81,6 +86,10 @@ namespace MountAnBot.modules
                     }
                 }
                 await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "Alle Settings-Commands:", message));
+            }
+            else
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", MountEmbedBuilder.WEAKMESSAGE));
             }
         }
 

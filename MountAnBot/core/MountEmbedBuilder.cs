@@ -7,6 +7,8 @@ namespace MountAnBot.core
 {
     public class MountEmbedBuilder
     {
+        public static string WEAKMESSAGE = "Du bist zu schwach um diesen Command zu benutzen!";
+
         public static EmbedBuilder create(Color color, IUser user, string title, string description)
         {
             EmbedBuilder builder = new EmbedBuilder();

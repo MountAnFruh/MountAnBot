@@ -77,51 +77,14 @@ namespace MountAnBot.modules
         }
 
         [Command("termin remove")]
-        [Summary("Entfernt einen Termin")]
+        [Summary("Entfernt einen Termin | Nur für Autorisierte!")]
         public async Task TerminRemove(params string[] input)
         {
-            Color color = new Color(255, 255, 0);
-            string message = "ERROR";
-
-            if (input.Length >= 2 && input.Length <= 3)
+            if (dba.isAuthorized("authorizedterminroles", (IGuildUser)Context.User))
             {
-                Termin termin;
-                if(input.Length == 2)
-                {
-                    termin = new Termin(input[0], input[1]);
-                }
-                else
-                {
-                    termin = new Termin(input[0], input[1], input[2]);
-                }
-                bool success = dba.removeTermin(termin);
-                if(success)
-                {
-                    message = "Termin wurde erfolgreich entfernt!";
-                }
-                else
-                {
-                    color = new Color(255, 0, 0);
-                    message = "Es gibt keinen Termin mit diesen Daten!";
-                }
-            }
-            else
-            {
-                color = new Color(0, 255, 0);
-                message = "=> !termin remove [Bezeichnung] [Startdatum] {Enddatum}";
-            }
-            await ReplyAsync("",false,MountEmbedBuilder.create(color,Context.User,"",message));
-        }
+                Color color = new Color(255, 255, 0);
+                string message = "ERROR";
 
-        [Command("termin add")]
-        [Summary("Fügt einen neuen Termin hinzu")]
-        public async Task TerminAdd(params string[] input)
-        {
-            Color color = new Color(255, 255, 0);
-            string message = "ERROR";
-
-            try
-            {
                 if (input.Length >= 2 && input.Length <= 3)
                 {
                     Termin termin;
@@ -133,29 +96,80 @@ namespace MountAnBot.modules
                     {
                         termin = new Termin(input[0], input[1], input[2]);
                     }
-                    bool success = dba.addTermin(termin);
+                    bool success = dba.removeTermin(termin);
                     if (success)
                     {
-                        message = "Termin wurde erfolgreich hinzugefügt!";
+                        message = "Termin wurde erfolgreich entfernt!";
                     }
                     else
                     {
                         color = new Color(255, 0, 0);
-                        message = "Es existiert schon ein Termin mit diesen Daten!";
+                        message = "Es gibt keinen Termin mit diesen Daten!";
                     }
                 }
                 else
                 {
                     color = new Color(0, 255, 0);
-                    message = "=> !termin add [Bezeichnung] [Startdatum] {Enddatum}";
+                    message = "=> !termin remove [Bezeichnung] [Startdatum] {Enddatum}";
                 }
+                await ReplyAsync("", false, MountEmbedBuilder.create(color, Context.User, "", message));
             }
-            catch (FormatException)
+            else
             {
-                color = new Color(255, 0, 0);
-                message = "**FORMATEXCEPTION:** Das Format des Datums ist falsch!";
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", MountEmbedBuilder.WEAKMESSAGE));
             }
-            await ReplyAsync("", false, MountEmbedBuilder.create(color, Context.User, "", message));
+        }
+
+        [Command("termin add")]
+        [Summary("Fügt einen neuen Termin hinzu | Nur für Autorisierte!")]
+        public async Task TerminAdd(params string[] input)
+        {
+            if (dba.isAuthorized("authorizedterminroles", (IGuildUser)Context.User))
+            {
+                Color color = new Color(255, 255, 0);
+                string message = "ERROR";
+
+                try
+                {
+                    if (input.Length >= 2 && input.Length <= 3)
+                    {
+                        Termin termin;
+                        if (input.Length == 2)
+                        {
+                            termin = new Termin(input[0], input[1]);
+                        }
+                        else
+                        {
+                            termin = new Termin(input[0], input[1], input[2]);
+                        }
+                        bool success = dba.addTermin(termin);
+                        if (success)
+                        {
+                            message = "Termin wurde erfolgreich hinzugefügt!";
+                        }
+                        else
+                        {
+                            color = new Color(255, 0, 0);
+                            message = "Es existiert schon ein Termin mit diesen Daten!";
+                        }
+                    }
+                    else
+                    {
+                        color = new Color(0, 255, 0);
+                        message = "=> !termin add [Bezeichnung] [Startdatum] {Enddatum}";
+                    }
+                }
+                catch (FormatException)
+                {
+                    color = new Color(255, 0, 0);
+                    message = "**FORMATEXCEPTION:** Das Format des Datums ist falsch!";
+                }
+                await ReplyAsync("", false, MountEmbedBuilder.create(color, Context.User, "", message));
+            }
+            else
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", MountEmbedBuilder.WEAKMESSAGE));
+            }
         }
     }
 }
