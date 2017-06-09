@@ -51,15 +51,15 @@ namespace MountAnBot.beans
             string message = "";
             if (vondate > DateTime.Now.Date.AddDays(4))
             {
-                message += "0   ";
+                message += ((int)vondate.Subtract(DateTime.Now.Date).TotalDays).ToString("D3") + " ";
             }
             else if (vondate > DateTime.Now.Date.AddDays(2))
             {
-                message += "+   ";
+                message += "+ " + ((int)vondate.Subtract(DateTime.Now.Date).TotalDays).ToString("D1") + " ";
             }
-            else if (vondate > DateTime.Now.Date)
+            else if (vondate >= DateTime.Now.Date)
             {
-                message += "-   ";
+                message += "- " + ((int)vondate.Subtract(DateTime.Now.Date).TotalDays).ToString("D1") + " ";
             }
             else
             {

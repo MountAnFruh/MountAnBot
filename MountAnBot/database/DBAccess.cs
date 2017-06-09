@@ -101,7 +101,7 @@ namespace MountAnBot.database
         public List<Termin> getAllZukTermine()
         {
             List<Termin> termine = new List<Termin>();
-            string sqlString = "SELECT * FROM termin WHERE vondatum > current_date ORDER BY vondatum;";
+            string sqlString = "SELECT * FROM termin WHERE vondatum >= current_date ORDER BY vondatum;";
             NpgsqlCommand command = new NpgsqlCommand(sqlString, database.Connection);
             NpgsqlDataReader dr = command.ExecuteReader();
             while (dr.Read())
