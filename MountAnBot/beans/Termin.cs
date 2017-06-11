@@ -68,9 +68,9 @@ namespace MountAnBot.beans
             string bisdateStr = "";
             if (!bisdate.Date.Equals(vondate.Date))
             {
-                bisdateStr = " - " + bisdate.ToString("ddd dd.MM.yyyy");
+                bisdateStr = " - " + bisdate.ToString("ddd dd.MM.yyyy", new CultureInfo("de-DE"));
             }
-            message += vondate.ToString("ddd dd.MM.yyyy") + bisdateStr + ": " + bezeichnung;
+            message += vondate.ToString("ddd dd.MM.yyyy", new CultureInfo("de-DE")) + bisdateStr + ": " + bezeichnung;
             return message;
         }
 
