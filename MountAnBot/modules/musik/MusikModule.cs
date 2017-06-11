@@ -4,6 +4,7 @@ using MountAnBot.core;
 using MountAnBot.database;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +27,38 @@ namespace MountAnBot.modules.musik
         {
             this.commandservice = commandservice;
             this.service = service;
+        }
+
+        public async Task Stream(bool _loop, string url)
+        {
+            this.loop = _loop;
+            if (service.Client != null)
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es wird gerade schon ein Song abgespielt"));
+                return;
+            }
+
+            IVoiceChannel voiceChan = (Context.User as IVoiceState).VoiceChannel;
+            if (voiceChan == null)
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Du bist noch nicht mal in einem Voice-Channel drinnen. Pffft"));
+                return;
+            }
+
+            await service.JoinAudio(voiceChan);
+
+            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Es wird versucht den Stream abzuspielen ..."));
+            do
+            {
+                try {
+                    await service.SendAudioAsync(Context.Channel, url);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            } while (loop);
+            await service.LeaveAudio();
         }
 
         public async Task Play(bool _loop, bool random, string parfilename)
@@ -144,25 +177,20 @@ namespace MountAnBot.modules.musik
             if(input.Length == 1)
             {
                 string youtubedlPath = dba.getSetting("youtubedlsource");
-                string youtubeCmd = "`\"" + youtubedlPath + "\" -f bestaudio -g \"" + input[0] + "\"`";
-                if (service.Client != null)
+                string youtubeCmd = "-f bestaudio -g \"" + input[0] + "\"";
+                Process process = Process.Start(new ProcessStartInfo
                 {
-                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es wird gerade schon ein Song abgespielt"));
-                    return;
-                }
-
-                IVoiceChannel voiceChan = (Context.User as IVoiceState).VoiceChannel;
-                if (voiceChan == null)
+                    FileName = youtubedlPath,
+                    Arguments = youtubeCmd,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true
+                });
+                while (!process.StandardOutput.EndOfStream)
                 {
-                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Du bist noch nicht mal in einem Voice-Channel drinnen. Pffft"));
-                    return;
+                    service.Lastsong = input[0];
+                    string line = process.StandardOutput.ReadLine();
+                    await Stream(false,line);
                 }
-
-                await service.JoinAudio(voiceChan);
-
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Es wird versucht die Youtube-URL abzuspielen ..."));
-                await service.SendAudioAsync(Context.Channel, youtubeCmd);
-                await service.LeaveAudio();
             }
             else
             {
@@ -171,13 +199,27 @@ namespace MountAnBot.modules.musik
         }
 
         [Command("song youtube loop", RunMode = RunMode.Async)]
-        [Summary("Spielt einen Youtube-Song ab")]
+        [Summary("Wiederholt einen Youtube-Song")]
         public async Task SongYoutubeLoop(params string[] input)
         {
             if (input.Length == 1)
             {
-                string youtubedlPath = dba.getSetting("youtubedlsource");
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "Des funktioniert noch nich :((("));
+                //string youtubedlPath = dba.getSetting("youtubedlsource");
+                //string youtubeCmd = "-f bestaudio -g \"" + input[0] + "\"";
+                //Process process = Process.Start(new ProcessStartInfo
+                //{
+                //    FileName = youtubedlPath,
+                //    Arguments = youtubeCmd,
+                //    UseShellExecute = false,
+                //    RedirectStandardOutput = true
+                //});
+                //loop = true;
+                //while (!process.StandardOutput.EndOfStream)
+                //{
+                //    string line = process.StandardOutput.ReadLine();
+                //    await Stream(true, line);
+                //}
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "Funktioniert noch nich :(("));
             }
             else
             {
@@ -233,24 +275,8 @@ namespace MountAnBot.modules.musik
         {
             if (input.Length == 1)
             {
-                if (service.Client != null)
-                {
-                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es wird gerade schon ein Song abgespielt"));
-                    return;
-                }
-
-                IVoiceChannel voiceChan = (Context.User as IVoiceState).VoiceChannel;
-                if (voiceChan == null)
-                {
-                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Du bist noch nicht mal in einem Voice-Channel drinnen. Pffft"));
-                    return;
-                }
-
-                await service.JoinAudio(voiceChan);
-
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Es wird versucht den Stream abzuspielen ..."));
-                await service.SendAudioAsync(Context.Channel, input[0]);
-                await service.LeaveAudio();
+                service.Lastsong = input[0];
+                await Stream(false, input[0]);
             }
             else
             {
