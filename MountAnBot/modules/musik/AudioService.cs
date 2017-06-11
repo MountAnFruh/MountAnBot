@@ -75,10 +75,6 @@ namespace MountAnBot.modules.musik
                 {
                     Console.WriteLine($"Playback of {path} cancelled");
                 }
-                catch(Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
                 finally
                 {
                     await stream.FlushAsync().ConfigureAwait(false);
@@ -103,7 +99,7 @@ namespace MountAnBot.modules.musik
             return Process.Start(new ProcessStartInfo
             {
                 FileName = dba.getSetting("ffmpegsource"),
-                Arguments = $"-loglevel panic -i \"{path}\" -ac 2 -af \"volume=0.15\" -f s16le -ar 48000 pipe:1",
+                Arguments = $"-i \"{path}\" -ac 2 -af \"volume=0.15\" -f s16le -ar 48000 pipe:1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true
             });
