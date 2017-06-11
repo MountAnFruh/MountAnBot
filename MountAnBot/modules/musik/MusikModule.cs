@@ -137,6 +137,54 @@ namespace MountAnBot.modules.musik
             }
         }
 
+        [Command("song youtube play", RunMode = RunMode.Async)]
+        [Summary("Spielt einen Youtube-Song ab")]
+        public async Task SongYoutubePlay(params string[] input)
+        {
+            if(input.Length == 1)
+            {
+                string youtubedlPath = dba.getSetting("youtubedlsource");
+                string youtubeCmd = "`\"" + youtubedlPath + "\" -f bestaudio -g \"" + input[0] + "\"`";
+                if (service.Client != null)
+                {
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es wird gerade schon ein Song abgespielt"));
+                    return;
+                }
+
+                IVoiceChannel voiceChan = (Context.User as IVoiceState).VoiceChannel;
+                if (voiceChan == null)
+                {
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Du bist noch nicht mal in einem Voice-Channel drinnen. Pffft"));
+                    return;
+                }
+
+                await service.JoinAudio(voiceChan);
+
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Es wird versucht die Youtube-URL abzuspielen ..."));
+                await service.SendAudioAsync(Context.Channel, youtubeCmd);
+                await service.LeaveAudio();
+            }
+            else
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song youtube play [Youtube-URL]"));
+            }
+        }
+
+        [Command("song youtube loop", RunMode = RunMode.Async)]
+        [Summary("Spielt einen Youtube-Song ab")]
+        public async Task SongYoutubeLoop(params string[] input)
+        {
+            if (input.Length == 1)
+            {
+                string youtubedlPath = dba.getSetting("youtubedlsource");
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "Des funktioniert noch nich :((("));
+            }
+            else
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song youtube random [Youtube-URL]"));
+            }
+        }
+
         [Command("song randomloop", RunMode = RunMode.Async)]
         [Summary("Wiederholt bestimmte Songs, die einen bestimmten Namen beinhalten")]
         public async Task SongRandomLoop(params string[] input)
