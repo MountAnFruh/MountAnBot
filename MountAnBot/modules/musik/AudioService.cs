@@ -67,6 +67,7 @@ namespace MountAnBot.modules.musik
                 process = CreateStream(path);
                 output = process.StandardOutput.BaseStream;
                 AudioOutStream stream = client.CreatePCMStream(AudioApplication.Music, 1920);
+                Console.WriteLine("really starting playback now!");
                 try
                 {
                     await output.CopyToAsync(stream, 81920, cancel.Token);
