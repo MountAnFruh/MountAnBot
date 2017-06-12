@@ -47,7 +47,7 @@ namespace MountAnBot.modules.musik
 
             await service.JoinAudio(voiceChan);
 
-            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Es wird versucht den Stream abzuspielen ..."));
+            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Es wird versucht den Song abzuspielen ..."));
             do
             {
                 try {
@@ -61,85 +61,85 @@ namespace MountAnBot.modules.musik
             await service.LeaveAudio();
         }
 
-        public async Task Play(bool _loop, bool random, string parfilename)
-        {
-            this.loop = _loop;
-            if (service.Client != null)
-            {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es wird gerade schon ein Song abgespielt"));
-                return;
-            }
+        //public async Task Play(bool _loop, bool random, string parfilename)
+        //{
+        //    this.loop = _loop;
+        //    if (service.Client != null)
+        //    {
+        //        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es wird gerade schon ein Song abgespielt"));
+        //        return;
+        //    }
 
-            IVoiceChannel voiceChan = (Context.User as IVoiceState).VoiceChannel;
-            if (voiceChan == null)
-            {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Du bist noch nicht mal in einem Voice-Channel drinnen. Pffft"));
-                return;
-            }
+        //    IVoiceChannel voiceChan = (Context.User as IVoiceState).VoiceChannel;
+        //    if (voiceChan == null)
+        //    {
+        //        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Du bist noch nicht mal in einem Voice-Channel drinnen. Pffft"));
+        //        return;
+        //    }
 
-            await service.JoinAudio(voiceChan);
+        //    await service.JoinAudio(voiceChan);
 
-            do
-            {
-                List<string> rightFiles = new List<string>();
+        //    do
+        //    {
+        //        List<string> rightFiles = new List<string>();
 
-                string[] files = Directory.GetFiles(dba.getSetting("musicdirectory"));
-                string[] parts = null;
-                foreach (string file in files)
-                {
-                    parts = file.Split(Path.DirectorySeparatorChar);
-                    if (parts[parts.Length - 1].ToLower().Replace("_", " ").Contains(parfilename.ToLower()))
-                    {
-                        rightFiles.Add(file);
-                    }
-                }
+        //        string[] files = Directory.GetFiles(dba.getSetting("musicdirectory"));
+        //        string[] parts = null;
+        //        foreach (string file in files)
+        //        {
+        //            parts = file.Split(Path.DirectorySeparatorChar);
+        //            if (parts[parts.Length - 1].ToLower().Replace("_", " ").Contains(parfilename.ToLower()))
+        //            {
+        //                rightFiles.Add(file);
+        //            }
+        //        }
 
-                if (random)
-                {
-                    int index = rand.Next(0, rightFiles.Count);
-                    List<string> rightFile = new List<string>();
-                    rightFile.Add(rightFiles[index]);
-                    rightFiles = rightFile;
-                }
+        //        if (random)
+        //        {
+        //            int index = rand.Next(0, rightFiles.Count);
+        //            List<string> rightFile = new List<string>();
+        //            rightFile.Add(rightFiles[index]);
+        //            rightFiles = rightFile;
+        //        }
 
-                if (rightFiles.Count > 1)
-                {
-                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt mehrere Dateien die diesen Namen beinhalten!"));
-                    await service.LeaveAudio();
-                    return;
-                }
-                else if (rightFiles.Count == 0)
-                {
-                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt keine Dateien die diesen Namen beinhalten!"));
-                    await service.LeaveAudio();
-                    return;
-                }
+        //        if (rightFiles.Count > 1)
+        //        {
+        //            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt mehrere Dateien die diesen Namen beinhalten!"));
+        //            await service.LeaveAudio();
+        //            return;
+        //        }
+        //        else if (rightFiles.Count == 0)
+        //        {
+        //            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt keine Dateien die diesen Namen beinhalten!"));
+        //            await service.LeaveAudio();
+        //            return;
+        //        }
 
-                string[] newParts = rightFiles[0].Split(Path.DirectorySeparatorChar);
-                if (!service.Mute)
-                {
-                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song " + newParts[newParts.Length - 1] + " wird abgespielt..."));
-                }
+        //        string[] newParts = rightFiles[0].Split(Path.DirectorySeparatorChar);
+        //        if (!service.Mute)
+        //        {
+        //            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song " + newParts[newParts.Length - 1] + " wird abgespielt..."));
+        //        }
 
-                service.Lastsong = newParts[newParts.Length - 1];
+        //        service.Lastsong = newParts[newParts.Length - 1];
 
-                do
-                {
-                    try
-                    {
-                        await service.SendAudioAsync(Context.Channel, rightFiles[0]);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                } while (loop && !random);
-            } while (loop && random);
+        //        do
+        //        {
+        //            try
+        //            {
+        //                await service.SendAudioAsync(Context.Channel, rightFiles[0]);
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Console.WriteLine(ex.Message);
+        //            }
+        //        } while (loop && !random);
+        //    } while (loop && random);
 
-            await service.LeaveAudio();
+        //    await service.LeaveAudio();
 
-            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song(s) fertig abgespielt"));
-        }
+        //    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song(s) fertig abgespielt"));
+        //}
 
         [Command("song help"), Alias("song")]
         [Summary("Gibt dir die Hilfe die du brauchst")]
@@ -156,19 +156,19 @@ namespace MountAnBot.modules.musik
             await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "Alle Song-Commands:", message));
         }
 
-        [Command("song play", RunMode = RunMode.Async)]
-        [Summary("Spielt einen Song ab")]
-        public async Task SongPlay(params string[] input)
-        {
-            if(input.Length == 1)
-            {
-                await Play(false, false, input[0]);
-            }
-            else
-            {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "","=> !song play [Name]"));
-            }
-        }
+        //[Command("song play", RunMode = RunMode.Async)]
+        //[Summary("Spielt einen Song ab")]
+        //public async Task SongPlay(params string[] input)
+        //{
+        //    if(input.Length == 1)
+        //    {
+        //        await Play(false, false, input[0]);
+        //    }
+        //    else
+        //    {
+        //        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "","=> !song play [Name]"));
+        //    }
+        //}
 
         [Command("song youtube play", RunMode = RunMode.Async)]
         [Summary("Spielt einen Youtube-Song ab")]
@@ -227,47 +227,47 @@ namespace MountAnBot.modules.musik
             }
         }
 
-        [Command("song randomloop", RunMode = RunMode.Async)]
-        [Summary("Wiederholt bestimmte Songs, die einen bestimmten Namen beinhalten")]
-        public async Task SongRandomLoop(params string[] input)
-        {
-            if (input.Length <= 1)
-            {
-                await Play(true, true, input.Length == 0 ? "" : input[0]);
-            }
-            else
-            {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song randomloop [Name]"));
-            }
-        }
+        //[Command("song randomloop", RunMode = RunMode.Async)]
+        //[Summary("Wiederholt bestimmte Songs, die einen bestimmten Namen beinhalten")]
+        //public async Task SongRandomLoop(params string[] input)
+        //{
+        //    if (input.Length <= 1)
+        //    {
+        //        await Play(true, true, input.Length == 0 ? "" : input[0]);
+        //    }
+        //    else
+        //    {
+        //        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song randomloop [Name]"));
+        //    }
+        //}
 
-        [Command("song random", RunMode = RunMode.Async)]
-        [Summary("Wiederholt bestimmte zufällige Songs, die einen bestimmten Namen beinhalten")]
-        public async Task SongRandom(params string[] input)
-        {
-            if (input.Length <= 1)
-            {
-                await Play(false, true, input.Length == 0 ? "" : input[0]);
-            }
-            else
-            {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song random [Name]"));
-            }
-        }
+        //[Command("song random", RunMode = RunMode.Async)]
+        //[Summary("Wiederholt bestimmte zufällige Songs, die einen bestimmten Namen beinhalten")]
+        //public async Task SongRandom(params string[] input)
+        //{
+        //    if (input.Length <= 1)
+        //    {
+        //        await Play(false, true, input.Length == 0 ? "" : input[0]);
+        //    }
+        //    else
+        //    {
+        //        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song random [Name]"));
+        //    }
+        //}
 
-        [Command("song loop", RunMode = RunMode.Async)]
-        [Summary("Wiederholt einen bestimmten Song, der einen bestimmten Namen beinhaltet")]
-        public async Task SongLoop(params string[] input)
-        {
-            if (input.Length == 1)
-            {
-                await Play(true, false, input[0]);
-            }
-            else
-            {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song loop [Name]"));
-            }
-        }
+        //[Command("song loop", RunMode = RunMode.Async)]
+        //[Summary("Wiederholt einen bestimmten Song, der einen bestimmten Namen beinhaltet")]
+        //public async Task SongLoop(params string[] input)
+        //{
+        //    if (input.Length == 1)
+        //    {
+        //        await Play(true, false, input[0]);
+        //    }
+        //    else
+        //    {
+        //        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song loop [Name]"));
+        //    }
+        //}
 
         [Command("song stream", RunMode = RunMode.Async)]
         [Summary("Spielt einen Stream ab (wenn möglich)")]

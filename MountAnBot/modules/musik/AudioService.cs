@@ -99,7 +99,7 @@ namespace MountAnBot.modules.musik
             return Process.Start(new ProcessStartInfo
             {
                 FileName = dba.getSetting("ffmpegsource"),
-                Arguments = $"-i \"{path}\" -ac 2 -af \"volume=0.15\" -f s16le -ar 48000 pipe:1",
+                Arguments = $"-i \"{path}\" -vn -ac 2 -af \"volume=0.15\" -f s16le -ar 48000 pipe:1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true
             });
