@@ -64,7 +64,7 @@ namespace MountAnBot.modules.musik
 
             if (client != null)
             {
-                await Task.Delay(2000);
+                await Task.Delay(200);
                 Console.WriteLine($"Starting playback of {path}");
                 process = CreateStream(path);
                 output = process.StandardOutput.BaseStream;
@@ -81,6 +81,7 @@ namespace MountAnBot.modules.musik
                 {
                     await stream.FlushAsync().ConfigureAwait(false);
                 }
+                process = null;
             }
         }
 
