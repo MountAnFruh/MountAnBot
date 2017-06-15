@@ -1,7 +1,9 @@
 ﻿using Discord;
 using Discord.Commands;
+using MountAnBot.beans;
 using MountAnBot.core;
 using MountAnBot.database;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,10 +31,21 @@ namespace MountAnBot.modules.musik
             this.service = service;
         }
 
-        public async Task Stream(bool _loop, string url)
+        public async Task Stream(String url)
         {
-            this.loop = _loop;
-            if (service.Client != null)
+            try
+            {
+                await service.SendAudioAsync(Context.Channel, url);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        public async Task PlayYT(String input, bool _loop)
+        {
+            if (service.Process != null)
             {
                 await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es wird gerade schon ein Song abgespielt"));
                 return;
@@ -41,105 +54,70 @@ namespace MountAnBot.modules.musik
             IVoiceChannel voiceChan = (Context.User as IVoiceState).VoiceChannel;
             if (voiceChan == null)
             {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Du bist noch nicht mal in einem Voice-Channel drinnen. Pffft"));
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", MountEmbedBuilder.NOAUDIOCHANNEL));
                 return;
             }
 
             await service.JoinAudio(voiceChan);
 
-            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Es wird versucht den Song abzuspielen ..."));
-            do
+            string youtubedlPath = dba.getSetting("youtubedlsource");
+            string youtubeCmdOuter = "-j --flat-playlist \"" + input + "\"";
+
+            Process processOuter = Process.Start(new ProcessStartInfo
             {
-                try {
-                    await service.SendAudioAsync(Context.Channel, url);
-                }
-                catch (Exception ex)
+                FileName = youtubedlPath,
+                Arguments = youtubeCmdOuter,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            });
+
+            while (!processOuter.StandardOutput.EndOfStream)
+            {
+                string youtubeUrl = processOuter.StandardOutput.ReadLine();
+                Youtubeurl yturl = JsonConvert.DeserializeObject<Youtubeurl>(youtubeUrl);
+                string youtubeCmd = "-f bestaudio -g \"" + yturl.Url + "\"";
+                Process process = Process.Start(new ProcessStartInfo
                 {
-                    Console.WriteLine(ex.Message);
+                    FileName = youtubedlPath,
+                    Arguments = youtubeCmd,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                });
+
+                service.Lastsong = yturl.Title;
+                loop = _loop;
+
+                while (!process.StandardOutput.EndOfStream)
+                {
+                    string line = process.StandardOutput.ReadLine();
+
+                    do
+                    {
+                        if (!service.Mute)
+                        {
+                            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Es wird versucht den Youtube-Song \"" + yturl.Title + "\" abzuspielen ..."));
+                        }
+
+                        await Stream(line);
+                    } while (loop);
                 }
-            } while (loop);
+
+                if (!process.StandardError.EndOfStream)
+                {
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Inner-Error: " + process.StandardError.ReadToEnd()));
+                }
+
+            }
+
+            if(!processOuter.StandardError.EndOfStream)
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Outer-Error: " + processOuter.StandardError.ReadToEnd()));
+            }
+
             await service.LeaveAudio();
         }
-
-        //public async Task Play(bool _loop, bool random, string parfilename)
-        //{
-        //    this.loop = _loop;
-        //    if (service.Client != null)
-        //    {
-        //        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es wird gerade schon ein Song abgespielt"));
-        //        return;
-        //    }
-
-        //    IVoiceChannel voiceChan = (Context.User as IVoiceState).VoiceChannel;
-        //    if (voiceChan == null)
-        //    {
-        //        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Du bist noch nicht mal in einem Voice-Channel drinnen. Pffft"));
-        //        return;
-        //    }
-
-        //    await service.JoinAudio(voiceChan);
-
-        //    do
-        //    {
-        //        List<string> rightFiles = new List<string>();
-
-        //        string[] files = Directory.GetFiles(dba.getSetting("musicdirectory"));
-        //        string[] parts = null;
-        //        foreach (string file in files)
-        //        {
-        //            parts = file.Split(Path.DirectorySeparatorChar);
-        //            if (parts[parts.Length - 1].ToLower().Replace("_", " ").Contains(parfilename.ToLower()))
-        //            {
-        //                rightFiles.Add(file);
-        //            }
-        //        }
-
-        //        if (random)
-        //        {
-        //            int index = rand.Next(0, rightFiles.Count);
-        //            List<string> rightFile = new List<string>();
-        //            rightFile.Add(rightFiles[index]);
-        //            rightFiles = rightFile;
-        //        }
-
-        //        if (rightFiles.Count > 1)
-        //        {
-        //            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt mehrere Dateien die diesen Namen beinhalten!"));
-        //            await service.LeaveAudio();
-        //            return;
-        //        }
-        //        else if (rightFiles.Count == 0)
-        //        {
-        //            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Es gibt keine Dateien die diesen Namen beinhalten!"));
-        //            await service.LeaveAudio();
-        //            return;
-        //        }
-
-        //        string[] newParts = rightFiles[0].Split(Path.DirectorySeparatorChar);
-        //        if (!service.Mute)
-        //        {
-        //            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song " + newParts[newParts.Length - 1] + " wird abgespielt..."));
-        //        }
-
-        //        service.Lastsong = newParts[newParts.Length - 1];
-
-        //        do
-        //        {
-        //            try
-        //            {
-        //                await service.SendAudioAsync(Context.Channel, rightFiles[0]);
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                Console.WriteLine(ex.Message);
-        //            }
-        //        } while (loop && !random);
-        //    } while (loop && random);
-
-        //    await service.LeaveAudio();
-
-        //    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Song(s) fertig abgespielt"));
-        //}
 
         [Command("song help"), Alias("song")]
         [Summary("Gibt dir die Hilfe die du brauchst")]
@@ -156,40 +134,40 @@ namespace MountAnBot.modules.musik
             await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "Alle Song-Commands:", message));
         }
 
-        //[Command("song play", RunMode = RunMode.Async)]
-        //[Summary("Spielt einen Song ab")]
-        //public async Task SongPlay(params string[] input)
-        //{
-        //    if(input.Length == 1)
-        //    {
-        //        await Play(false, false, input[0]);
-        //    }
-        //    else
-        //    {
-        //        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "","=> !song play [Name]"));
-        //    }
-        //}
+        [Command("song youtube playlist", RunMode = RunMode.Async)]
+        [Summary("Spielt eine Youtube-Playlist ab")]
+        public async Task SongYoutubePlaylist(params string[] input)
+        {
+            if (input.Length == 1)
+            {
+                if (input[0].StartsWith("https://www.youtube.com/") || input[0].StartsWith("https://youtu.be/"))
+                {
+                    await PlayYT(input[0], false);
+                }
+                else
+                {
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Ernsthaft, das ist keine Youtube-Playlist-URL! Geh nach Hause!"));
+                }
+            }
+            else
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song youtube playlist [Youtube-Playlist-URL]"));
+            }
+        }
 
         [Command("song youtube play", RunMode = RunMode.Async)]
-        [Summary("Spielt einen Youtube-Song ab")]
+        [Summary("Spielt einen Youtube-Song ab (keine Streams!)")]
         public async Task SongYoutubePlay(params string[] input)
         {
-            if(input.Length == 1)
+            if (input.Length == 1)
             {
-                string youtubedlPath = dba.getSetting("youtubedlsource");
-                string youtubeCmd = "-f bestaudio -g \"" + input[0] + "\"";
-                Process process = Process.Start(new ProcessStartInfo
+                if (input[0].StartsWith("https://www.youtube.com/") || input[0].StartsWith("https://youtu.be/"))
                 {
-                    FileName = youtubedlPath,
-                    Arguments = youtubeCmd,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true
-                });
-                while (!process.StandardOutput.EndOfStream)
+                    await PlayYT(input[0], false);
+                }
+                else
                 {
-                    service.Lastsong = input[0];
-                    string line = process.StandardOutput.ReadLine();
-                    await Stream(false,line);
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Ernsthaft, das ist keine Youtube-URL! Geh nach Hause!"));
                 }
             }
             else
@@ -204,83 +182,32 @@ namespace MountAnBot.modules.musik
         {
             if (input.Length == 1)
             {
-                //string youtubedlPath = dba.getSetting("youtubedlsource");
-                //string youtubeCmd = "-f bestaudio -g \"" + input[0] + "\"";
-                //Process process = Process.Start(new ProcessStartInfo
-                //{
-                //    FileName = youtubedlPath,
-                //    Arguments = youtubeCmd,
-                //    UseShellExecute = false,
-                //    RedirectStandardOutput = true
-                //});
-                //loop = true;
-                //while (!process.StandardOutput.EndOfStream)
-                //{
-                //    string line = process.StandardOutput.ReadLine();
-                //    await Stream(true, line);
-                //}
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "Funktioniert noch nich :(("));
+                if (input[0].StartsWith("https://www.youtube.com/") || input[0].StartsWith("https://youtu.be/"))
+                {
+                    await PlayYT(input[0], true);
+                }
+                else
+                {
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Ernsthaft, das ist keine Youtube-URL! Geh nach Hause!"));
+                }
             }
             else
             {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song youtube random [Youtube-URL]"));
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song youtube loop [Youtube-URL]"));
             }
         }
 
-        //[Command("song randomloop", RunMode = RunMode.Async)]
-        //[Summary("Wiederholt bestimmte Songs, die einen bestimmten Namen beinhalten")]
-        //public async Task SongRandomLoop(params string[] input)
-        //{
-        //    if (input.Length <= 1)
-        //    {
-        //        await Play(true, true, input.Length == 0 ? "" : input[0]);
-        //    }
-        //    else
-        //    {
-        //        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song randomloop [Name]"));
-        //    }
-        //}
-
-        //[Command("song random", RunMode = RunMode.Async)]
-        //[Summary("Wiederholt bestimmte zufällige Songs, die einen bestimmten Namen beinhalten")]
-        //public async Task SongRandom(params string[] input)
-        //{
-        //    if (input.Length <= 1)
-        //    {
-        //        await Play(false, true, input.Length == 0 ? "" : input[0]);
-        //    }
-        //    else
-        //    {
-        //        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song random [Name]"));
-        //    }
-        //}
-
-        //[Command("song loop", RunMode = RunMode.Async)]
-        //[Summary("Wiederholt einen bestimmten Song, der einen bestimmten Namen beinhaltet")]
-        //public async Task SongLoop(params string[] input)
-        //{
-        //    if (input.Length == 1)
-        //    {
-        //        await Play(true, false, input[0]);
-        //    }
-        //    else
-        //    {
-        //        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song loop [Name]"));
-        //    }
-        //}
-
-        [Command("song stream", RunMode = RunMode.Async)]
-        [Summary("Spielt einen Stream ab (wenn möglich)")]
+        [Command("song stream")]
+        [Summary("Spielt eine Stream-URL ab")]
         public async Task SongStream(params string[] input)
         {
             if (input.Length == 1)
             {
-                service.Lastsong = input[0];
-                await Stream(false, input[0]);
+                await Stream(input[0]);
             }
             else
             {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song stream [URL/File/etc]"));
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song stream [Stream-URL]"));
             }
         }
 
@@ -306,7 +233,7 @@ namespace MountAnBot.modules.musik
         [Summary("Schaltet die Textausgabe des Songs vom Bot aus")]
         public async Task SongMute()
         {
-            if(!service.Mute)
+            if (!service.Mute)
             {
                 service.Mute = true;
                 await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 255, 0), Context.User, "", "Textausgabe des Songs ausgeschalten"));

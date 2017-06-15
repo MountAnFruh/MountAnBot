@@ -16,8 +16,7 @@ namespace MountAnBot.modules
         {
             MessageProperties props = new MessageProperties();
             IUserMessage msg = await ReplyAsync("<:zugfuhrer:278803990068592641>");
-            Thread thread = new Thread(() => this.ThreadKevin(msg));
-            thread.Start();
+            Task.Run(() => this.ThreadKevin(msg));
         }
 
         public async void ThreadKevin(IUserMessage msg)
@@ -40,8 +39,7 @@ namespace MountAnBot.modules
         public async Task Swag()
         {
             IUserMessage msg = await ReplyAsync("( ͡° ͜ʖ ͡°)>⌐■-■");
-            Thread thread = new Thread(() => this.ThreadSwag(msg));
-            thread.Start();
+            Task.Run(() => this.ThreadSwag(msg));
         }
 
         public async void ThreadSwag(IUserMessage msg)
