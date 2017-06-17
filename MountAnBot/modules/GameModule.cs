@@ -41,7 +41,7 @@ namespace MountAnBot.modules
             if (input.Length == 2) {
                 Pfad entf = new Pfad(input[0], input[1]);
                 string message;
-                if(entf.Start_addresse.Equals("") || entf.End_adresse.Equals(""))
+                if(entf.Start_addresse == null || entf.End_adresse == null)
                 {
                     message = "Route ist nicht verfügbar!";
                 }
