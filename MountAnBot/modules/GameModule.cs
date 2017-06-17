@@ -40,7 +40,15 @@ namespace MountAnBot.modules
         {
             if (input.Length == 2) {
                 Pfad entf = new Pfad(input[0], input[1]);
-                string message = "Von: " + entf.Start_addresse + "\nBis: " + entf.End_adresse + "\nEntfernung: " + entf.Entfernung + " km";
+                string message;
+                if(entf.Start_addresse.Equals("") || entf.End_adresse.Equals(""))
+                {
+                    message = "Route ist nicht verfügbar!";
+                }
+                else
+                {
+                    message = "Von: " + entf.Start_addresse + "\nBis: " + entf.End_adresse + "\nEntfernung: " + entf.Entfernung + " km";
+                }
                 await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "Entfernung:", message));
             }
             else
