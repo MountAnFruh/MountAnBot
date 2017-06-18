@@ -134,9 +134,9 @@ namespace MountAnBot.modules.musik
             await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "Alle Song-Commands:", message));
         }
 
-        [Command("song youtube playlist", RunMode = RunMode.Async)]
+        [Command("song youtube playlist play", RunMode = RunMode.Async)]
         [Summary("Spielt eine Youtube-Playlist ab")]
-        public async Task SongYoutubePlaylist(params string[] input)
+        public async Task SongYoutubePlaylistPlay(params string[] input)
         {
             if (input.Length == 1)
             {
@@ -151,12 +151,33 @@ namespace MountAnBot.modules.musik
             }
             else
             {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song youtube playlist [Youtube-Playlist-URL]"));
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song youtube playlist play [Youtube-Playlist-URL]"));
+            }
+        }
+
+        [Command("song youtube playlist loop", RunMode = RunMode.Async)]
+        [Summary("Spielt eine Youtube-Playlist ab")]
+        public async Task SongYoutubePlaylistLoop(params string[] input)
+        {
+            if (input.Length == 1)
+            {
+                if (input[0].StartsWith("https://www.youtube.com/") || input[0].StartsWith("https://youtu.be/"))
+                {
+                    await PlayYT(input[0], true);
+                }
+                else
+                {
+                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Ernsthaft, das ist keine Youtube-Playlist-URL! Geh nach Hause!"));
+                }
+            }
+            else
+            {
+                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song youtube playlist loop [Youtube-Playlist-URL]"));
             }
         }
 
         [Command("song youtube play", RunMode = RunMode.Async)]
-        [Summary("Spielt einen Youtube-Song ab (keine Streams!)")]
+        [Summary("Spielt einen Youtube-Song ab")]
         public async Task SongYoutubePlay(params string[] input)
         {
             if (input.Length == 1)
