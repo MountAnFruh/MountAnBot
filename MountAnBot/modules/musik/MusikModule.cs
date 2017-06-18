@@ -155,26 +155,26 @@ namespace MountAnBot.modules.musik
             }
         }
 
-        [Command("song youtube playlist loop", RunMode = RunMode.Async)]
-        [Summary("Spielt eine Youtube-Playlist ab")]
-        public async Task SongYoutubePlaylistLoop(params string[] input)
-        {
-            if (input.Length == 1)
-            {
-                if (input[0].StartsWith("https://www.youtube.com/") || input[0].StartsWith("https://youtu.be/"))
-                {
-                    await PlayYT(input[0], true);
-                }
-                else
-                {
-                    await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Ernsthaft, das ist keine Youtube-Playlist-URL! Geh nach Hause!"));
-                }
-            }
-            else
-            {
-                await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song youtube playlist loop [Youtube-Playlist-URL]"));
-            }
-        }
+        //[Command("song youtube playlist loop", RunMode = RunMode.Async)]
+        //[Summary("Spielt eine Youtube-Playlist ab")]
+        //public async Task SongYoutubePlaylistLoop(params string[] input)
+        //{
+        //    if (input.Length == 1)
+        //    {
+        //        if (input[0].StartsWith("https://www.youtube.com/") || input[0].StartsWith("https://youtu.be/"))
+        //        {
+        //            await PlayYT(input[0], true);
+        //        }
+        //        else
+        //        {
+        //            await ReplyAsync("", false, MountEmbedBuilder.create(new Color(255, 0, 0), Context.User, "", "Ernsthaft, das ist keine Youtube-Playlist-URL! Geh nach Hause!"));
+        //        }
+        //    }
+        //    else
+        //    {
+        //        await ReplyAsync("", false, MountEmbedBuilder.create(new Color(0, 255, 0), Context.User, "", "=> !song youtube playlist loop [Youtube-Playlist-URL]"));
+        //    }
+        //}
 
         [Command("song youtube play", RunMode = RunMode.Async)]
         [Summary("Spielt einen Youtube-Song ab")]
